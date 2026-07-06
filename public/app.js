@@ -12,7 +12,6 @@ document.addEventListener('DOMContentLoaded', () => {
   const views = {
     dashboard: document.querySelector('.view-dashboard'),
     live: document.querySelector('.view-live'),
-    detail: document.querySelector('.view-detail'),
     employees: document.querySelector('.view-employees'),
   };
 
@@ -49,6 +48,8 @@ document.addEventListener('DOMContentLoaded', () => {
       const viewName = item.getAttribute('data-view');
       if (viewName && views[viewName]) {
         switchView(viewName, item);
+      } else {
+        window.location.href = '/';
       }
       closeSidebar();
     });
@@ -81,75 +82,10 @@ document.addEventListener('DOMContentLoaded', () => {
   if (sidebarOverlay) {
     sidebarOverlay.addEventListener('click', closeSidebar);
   }
-
   // ──────────────────────────────────────────────
-  // 3. LIVE SCREEN CARDS — VIEW DETAIL
+  // 3. LIVE SCREEN CARDS GRID
   // ──────────────────────────────────────────────
   const monitorGrid = document.getElementById('monitorGrid');
-
-  const showCardDetail = (card) => {
-    const name = card.getAttribute('data-name') || card.querySelector('.screen-card-name')?.textContent || 'Unknown';
-    const dept = card.querySelector('.screen-card-dept')?.textContent || '';
-    const status = card.getAttribute('data-status') || 'active';
-    const osEl = card.querySelector('.screen-card-os');
-    const os = osEl ? osEl.textContent.trim() : '';
-
-    const detailView = views.detail;
-    if (!detailView) return;
-
-    // Update employee header
-    const detailName = detailView.querySelector('.detail-employee-name');
-    const detailDept = detailView.querySelector('.detail-employee-dept');
-    const detailBadge = detailView.querySelector('.detail-employee-header .badge');
-
-    if (detailName) detailName.textContent = name;
-    if (detailDept) detailDept.textContent = dept;
-    if (detailBadge) {
-      detailBadge.textContent = status.charAt(0).toUpperCase() + status.slice(1);
-      detailBadge.className = `badge badge-${status}`;
-    }
-
-    // Update avatar initials
-    const avatar = detailView.querySelector('.detail-employee-avatar');
-    if (avatar) {
-      const initials = name.split(' ').map(w => w[0]).join('').substring(0, 2).toUpperCase();
-      avatar.textContent = initials;
-    }
-
-    // Mirror screen gradient
-    const cardThumb = card.querySelector('.screen-thumb');
-    const detailViewer = detailView.querySelector('.detail-screen-viewer');
-    if (cardThumb && detailViewer) {
-      const bg = cardThumb.style.background;
-      if (bg) detailViewer.style.background = bg;
-    }
-
-    switchView('detail');
-    animateProgressBars();
-  };
-
-  // Event delegation on the monitor grid
-  if (monitorGrid) {
-    monitorGrid.addEventListener('click', (e) => {
-      const btn = e.target.closest('.view-detail-btn');
-      if (btn) {
-        const card = btn.closest('.screen-card');
-        if (card) showCardDetail(card);
-      }
-    });
-  }
-
-  // ──────────────────────────────────────────────
-  // 4. DETAIL VIEW BACK BUTTON
-  // ──────────────────────────────────────────────
-  const detailBackBtn = document.getElementById('backToLive');
-  if (detailBackBtn) {
-    detailBackBtn.addEventListener('click', () => {
-      const liveNav = document.querySelector('.sidebar-nav-item[data-view="live"]');
-      switchView('live', liveNav);
-    });
-  }
-
   // ──────────────────────────────────────────────
   // 5. FILTER DROPDOWN (Live Screens)
   // ──────────────────────────────────────────────
@@ -252,13 +188,14 @@ document.addEventListener('DOMContentLoaded', () => {
   // Initialize Echo
   if (typeof Pusher !== 'undefined' && !window.echoInstance) {
       window.Pusher = Pusher;
+      const isHttps = window.location.protocol === 'https:';
       window.echoInstance = new Echo({
           broadcaster: 'reverb',
           key: 'agenkukey',
-          wsHost: '127.0.0.1',
+          wsHost: window.location.hostname,
           wsPort: 8080,
           wssPort: 8080,
-          forceTLS: false,
+          forceTLS: isHttps,
           enabledTransports: ['ws', 'wss'],
       });
   }
@@ -268,9 +205,10 @@ document.addEventListener('DOMContentLoaded', () => {
     window.echoInstance.channel("agents")
       .listen("AgentDataReceived", async (e) => {
         const data = e.data;
-        if (data && data.user && monitorGrid) {
-          
-          // Find or create card
+        if (!data || !data.user) return;
+
+        // 1. Dashboard (Live Screens) updates
+        if (monitorGrid) {
           let card = monitorGrid.querySelector(`.screen-card[data-user="${data.user}"]`);
           if (!card) {
             card = document.createElement("div");
@@ -286,14 +224,13 @@ document.addEventListener('DOMContentLoaded', () => {
                   <p class="screen-card-dept"></p>
                   <p class="screen-card-os"></p>
                 </div>
-                <button class="btn btn-sm btn-primary view-detail-btn">View Detail</button>
+                <a href="/monitor/${encodeURIComponent(data.user)}" class="btn btn-sm btn-primary view-detail-btn">View Detail</a>
               </div>
             `;
             monitorGrid.appendChild(card);
           }
           
           card.setAttribute("data-status", data.status);
-          
           const badge = card.querySelector(".status-badge");
           if (badge) {
             badge.textContent = data.status.charAt(0).toUpperCase() + data.status.slice(1);
@@ -301,7 +238,7 @@ document.addEventListener('DOMContentLoaded', () => {
           }
           
           try {
-            const res = await fetch("/api/monitor");
+            const res = await fetch("/api/monitor?user=" + encodeURIComponent(data.user));
             const fullData = await res.json();
             if (fullData.screen) {
               const thumb = card.querySelector(".screen-thumb");
@@ -315,12 +252,10 @@ document.addEventListener('DOMContentLoaded', () => {
           
           const deptEl = card.querySelector(".screen-card-dept");
           if (deptEl) deptEl.textContent = "Window: " + data.window;
-          
           const userNameEl = card.querySelector(".screen-card-name");
           if (userNameEl) userNameEl.textContent = data.user;
-          
           const osEl = card.querySelector(".screen-card-os");
-          if (osEl) osEl.innerHTML = '<i class="ph ph-apple-logo"></i> ' + data.device;
+          if (osEl) osEl.innerHTML = '<i class="ph ph-windows-logo"></i> ' + data.device;
           
           const notifList = document.querySelector(".notif-list");
           if (notifList) {
@@ -342,6 +277,55 @@ document.addEventListener('DOMContentLoaded', () => {
           
           filterCards();
           updateDashboardStats();
+        }
+        
+        // 2. Detail Page updates
+        const detailViewer = document.querySelector('.detail-screen-viewer');
+        if (detailViewer) {
+          const detailName = document.querySelector('.detail-employee-name');
+          if (detailName && detailName.textContent === data.user) {
+            try {
+              const res = await fetch("/api/monitor?user=" + encodeURIComponent(data.user));
+              const fullData = await res.json();
+              if (fullData.screen) {
+                detailViewer.style.background = `var(--gray-900) url("${fullData.screen}") center/cover no-repeat`;
+              }
+            } catch (err) {}
+
+            const dBadge = document.querySelector('.detail-employee-header .badge');
+            if (dBadge) {
+              dBadge.textContent = data.status.charAt(0).toUpperCase() + data.status.slice(1);
+              dBadge.className = `badge badge-${data.status}`;
+            }
+            const windowVal = document.querySelector('.window-value');
+            if (windowVal && data.window) windowVal.textContent = data.window;
+            
+            const ipVal = document.querySelector('.ip-value');
+            if (ipVal && data.ip) ipVal.textContent = data.ip;
+            
+            const ssidVal = document.querySelector('.ssid-value');
+            if (ssidVal && data.ssid) ssidVal.textContent = data.ssid;
+            
+            const cpuVal = document.querySelector('.cpu-value');
+            if (cpuVal && data.cpu !== undefined) cpuVal.textContent = data.cpu + '%';
+            
+            const ramVal = document.querySelector('.ram-value');
+            if (ramVal && data.ram !== undefined) ramVal.textContent = data.ram + '%';
+            
+            const storageVal = document.querySelector('.storage-value');
+            if (storageVal && data.storage !== undefined) storageVal.textContent = data.storage + '%';
+            
+            const appsList = document.querySelector('.apps-list');
+            if (appsList && data.apps && Array.isArray(data.apps)) {
+                appsList.innerHTML = '';
+                data.apps.forEach(app => {
+                    const row = document.createElement('div');
+                    row.className = 'detail-info-row';
+                    row.innerHTML = '<span class="detail-info-label" style="display:flex; align-items:center; gap:8px;"><i class="ph ph-app-window" style="color:var(--primary);"></i>' + app + '</span>';
+                    appsList.appendChild(row);
+                });
+            }
+          }
         }
       });
   };
@@ -509,6 +493,49 @@ document.addEventListener('DOMContentLoaded', () => {
       updateDashboardStats();
     });
   }
+  // ──────────────────────────────────────────────
+  // 14. DETAIL SCREEN ACTIONS
+  // ──────────────────────────────────────────────
+  const btnScreenshot = document.getElementById('btn-screenshot');
+  const btnFullscreen = document.getElementById('btn-fullscreen');
+  const detailViewer = document.querySelector('.detail-screen-viewer');
+
+  if (btnScreenshot) {
+    btnScreenshot.addEventListener('click', async () => {
+      try {
+        const nameEl = document.querySelector('.detail-employee-name');
+        if (!nameEl) return;
+        const user = nameEl.textContent.trim();
+        const res = await fetch("/api/monitor?user=" + encodeURIComponent(user));
+        const fullData = await res.json();
+        if (fullData.screen && fullData.screen.startsWith('data:image')) {
+            const a = document.createElement('a');
+            a.href = fullData.screen;
+            a.download = `screenshot_${user}_${new Date().getTime()}.jpg`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+        } else {
+            alert('Screenshot data not available yet. Please wait a moment.');
+        }
+      } catch(e) {
+          console.error(e);
+      }
+    });
+  }
+
+  if (btnFullscreen && detailViewer) {
+    btnFullscreen.addEventListener('click', () => {
+      if (!document.fullscreenElement) {
+        detailViewer.requestFullscreen().catch(err => {
+          alert(`Error attempting to enable full-screen mode: ${err.message} (${err.name})`);
+        });
+      } else {
+        document.exitFullscreen();
+      }
+    });
+  }
+
 
   // ──────────────────────────────────────────────
   // INITIAL STATE

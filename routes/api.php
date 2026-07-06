@@ -9,7 +9,7 @@ Route::get('/user', function (Request $request) {
 
 Route::post('/monitor', function (Request $request) {
     $data = $request->all();
-    \Illuminate\Support\Facades\Cache::put('agent_data', $data, now()->addMinutes(5));
+    \Illuminate\Support\Facades\Cache::put('agent_data_' . $data['user'], $data, now()->addMinutes(5));
     
     $broadcastData = $data;
     unset($broadcastData['screen']); // Too large for WebSocket
@@ -18,6 +18,10 @@ Route::post('/monitor', function (Request $request) {
     return response()->json(['status' => 'ok']);
 });
 
-Route::get('/monitor', function () {
+Route::get('/monitor', function (Request $request) {
+    $user = $request->query('user');
+    if ($user) {
+        return response()->json(\Illuminate\Support\Facades\Cache::get('agent_data_' . $user, []));
+    }
     return response()->json(\Illuminate\Support\Facades\Cache::get('agent_data', []));
 });

@@ -218,6 +218,10 @@
                 <i class="ph ph-list"></i>
               </button>
             </div>
+            <a href="{{ asset('downloads/AgentKu_Setup.exe') }}" download class="btn btn-primary" style="text-decoration: none;">
+              <i class="ph ph-download-simple"></i>
+              <span>Download Agent</span>
+            </a>
             <button class="btn btn-outline" id="refreshBtn">
               <i class="ph ph-arrow-clockwise"></i>
               <span>Refresh</span>
@@ -226,192 +230,9 @@
         </div>
 
         <div class="monitor-grid" id="monitorGrid">
-
-              <button class="btn btn-sm btn-primary view-detail-btn">View Detail</button>
-            </div>
-          </div>
-
         </div>
       </section>
 
-      <!-- ==================== VIEW 3: DETAIL VIEW ==================== -->
-      <section class="view view-detail" style="display: none;">
-        <button class="btn btn-ghost back-btn" id="backToLive">
-          <i class="ph ph-arrow-left"></i>
-          <span>Back to Live Screens</span>
-        </button>
-
-        <div class="detail-layout">
-          <!-- Left: Screen Viewer -->
-          <div class="detail-screen">
-            <div class="detail-screen-viewer" style="background: linear-gradient(180deg, #1e1e2e 0%, #282a36 30%, #1e1e2e 100%); position: relative; overflow: hidden;">
-              <div style="position:absolute;top:8%;left:6%;right:6%;height:2px;background:rgba(139,92,246,0.4);border-radius:2px;"></div>
-              <div style="position:absolute;top:12%;left:6%;right:20%;height:2px;background:rgba(86,182,194,0.35);border-radius:2px;"></div>
-              <div style="position:absolute;top:16%;left:10%;right:28%;height:2px;background:rgba(248,113,113,0.3);border-radius:2px;"></div>
-              <div style="position:absolute;top:20%;left:10%;right:12%;height:2px;background:rgba(250,204,21,0.3);border-radius:2px;"></div>
-              <div style="position:absolute;top:24%;left:6%;right:32%;height:2px;background:rgba(139,92,246,0.4);border-radius:2px;"></div>
-              <div style="position:absolute;top:28%;left:10%;right:18%;height:2px;background:rgba(74,222,128,0.3);border-radius:2px;"></div>
-              <div style="position:absolute;top:32%;left:10%;right:24%;height:2px;background:rgba(86,182,194,0.35);border-radius:2px;"></div>
-              <div style="position:absolute;top:36%;left:6%;right:38%;height:2px;background:rgba(248,113,113,0.3);border-radius:2px;"></div>
-              <div style="position:absolute;top:40%;left:14%;right:20%;height:2px;background:rgba(250,204,21,0.3);border-radius:2px;"></div>
-              <div style="position:absolute;top:44%;left:6%;right:28%;height:2px;background:rgba(139,92,246,0.35);border-radius:2px;"></div>
-              <div style="position:absolute;top:48%;left:10%;right:35%;height:2px;background:rgba(74,222,128,0.3);border-radius:2px;"></div>
-              <div style="position:absolute;top:52%;left:10%;right:15%;height:2px;background:rgba(86,182,194,0.35);border-radius:2px;"></div>
-              <div style="position:absolute;top:56%;left:6%;right:22%;height:2px;background:rgba(248,113,113,0.3);border-radius:2px;"></div>
-              <div style="position:absolute;top:60%;left:14%;right:30%;height:2px;background:rgba(250,204,21,0.3);border-radius:2px;"></div>
-              <div style="position:absolute;top:64%;left:6%;right:42%;height:2px;background:rgba(139,92,246,0.4);border-radius:2px;"></div>
-              <div style="position:absolute;top:68%;left:10%;right:18%;height:2px;background:rgba(74,222,128,0.3);border-radius:2px;"></div>
-              <div style="position:absolute;top:3%;left:4%;width:30%;height:3%;background:rgba(40,42,54,0.9);border-radius:3px;display:flex;align-items:center;padding-left:6px;">
-                <div style="width:5px;height:5px;border-radius:50%;background:#ff5f57;margin-right:3px;"></div>
-                <div style="width:5px;height:5px;border-radius:50%;background:#febc2e;margin-right:3px;"></div>
-                <div style="width:5px;height:5px;border-radius:50%;background:#28c840;"></div>
-              </div>
-              <div class="detail-screen-live-badge">
-                <span class="live-dot"></span>
-                LIVE
-              </div>
-            </div>
-            <div class="detail-screen-toolbar">
-              <button class="btn btn-outline btn-sm">
-                <i class="ph ph-camera"></i>
-                <span>Screenshot</span>
-              </button>
-              <button class="btn btn-outline btn-sm">
-                <i class="ph ph-record"></i>
-                <span>Record</span>
-              </button>
-              <button class="btn btn-outline btn-sm">
-                <i class="ph ph-arrows-out"></i>
-                <span>Full Screen</span>
-              </button>
-            </div>
-          </div>
-
-          <!-- Right: Detail Info -->
-          <div class="detail-info">
-            <!-- Employee Header -->
-            <div class="detail-employee-header">
-              <div class="detail-employee-avatar" style="background: #6366f1;">AF</div>
-              <div class="detail-employee-meta">
-                <h2 class="detail-employee-name">Ahmad Fauzi</h2>
-                <p class="detail-employee-dept">IT Department</p>
-              </div>
-              <span class="badge badge-active">Active</span>
-            </div>
-
-            <!-- Device Info Card -->
-            <div class="detail-card">
-              <h3 class="detail-card-title">
-                <i class="ph ph-desktop"></i>
-                Device Info
-              </h3>
-              <div class="detail-card-grid">
-                <div class="detail-info-row">
-                  <span class="detail-info-label">IP Address</span>
-                  <span class="detail-info-value">192.168.1.45</span>
-                </div>
-                <div class="detail-info-row">
-                  <span class="detail-info-label">Operating System</span>
-                  <span class="detail-info-value">Windows 11 Pro</span>
-                </div>
-                <div class="detail-info-row">
-                  <span class="detail-info-label">RAM Usage</span>
-                  <span class="detail-info-value">
-                    12.4 / 16 GB
-                    <div class="progress-bar">
-                      <div class="progress-bar-fill" style="width: 77%; background: #6366f1;"></div>
-                    </div>
-                  </span>
-                </div>
-                <div class="detail-info-row">
-                  <span class="detail-info-label">CPU Usage</span>
-                  <span class="detail-info-value">
-                    34%
-                    <div class="progress-bar">
-                      <div class="progress-bar-fill" style="width: 34%; background: #10b981;"></div>
-                    </div>
-                  </span>
-                </div>
-                <div class="detail-info-row">
-                  <span class="detail-info-label">Screen Resolution</span>
-                  <span class="detail-info-value">1920 x 1080</span>
-                </div>
-                <div class="detail-info-row">
-                  <span class="detail-info-label">Agent Version</span>
-                  <span class="detail-info-value">v2.1.0</span>
-                </div>
-              </div>
-            </div>
-
-            <!-- Current Activity Card -->
-            <div class="detail-card">
-              <h3 class="detail-card-title">
-                <i class="ph ph-app-window"></i>
-                Current Activity
-              </h3>
-              <div class="detail-card-grid">
-                <div class="detail-info-row">
-                  <span class="detail-info-label">Active Window</span>
-                  <span class="detail-info-value">Visual Studio Code</span>
-                </div>
-                <div class="detail-info-row">
-                  <span class="detail-info-label">Current File</span>
-                  <span class="detail-info-value">dashboard.blade.php</span>
-                </div>
-                <div class="detail-info-row">
-                  <span class="detail-info-label">Duration</span>
-                  <span class="detail-info-value">1h 23m</span>
-                </div>
-              </div>
-            </div>
-
-            <!-- Activity Timeline Card -->
-            <div class="detail-card">
-              <h3 class="detail-card-title">
-                <i class="ph ph-clock"></i>
-                Activity Timeline
-              </h3>
-              <div class="timeline">
-                <div class="timeline-item">
-                  <div class="timeline-dot active"></div>
-                  <div class="timeline-content">
-                    <span class="timeline-time">14:30</span>
-                    <span class="timeline-text">Opened VS Code</span>
-                  </div>
-                </div>
-                <div class="timeline-item">
-                  <div class="timeline-dot"></div>
-                  <div class="timeline-content">
-                    <span class="timeline-time">14:15</span>
-                    <span class="timeline-text">Switched from Chrome</span>
-                  </div>
-                </div>
-                <div class="timeline-item">
-                  <div class="timeline-dot"></div>
-                  <div class="timeline-content">
-                    <span class="timeline-time">13:45</span>
-                    <span class="timeline-text">Google Chrome - stackoverflow.com</span>
-                  </div>
-                </div>
-                <div class="timeline-item">
-                  <div class="timeline-dot"></div>
-                  <div class="timeline-content">
-                    <span class="timeline-time">13:20</span>
-                    <span class="timeline-text">Slack - #dev-team channel</span>
-                  </div>
-                </div>
-                <div class="timeline-item">
-                  <div class="timeline-dot idle"></div>
-                  <div class="timeline-content">
-                    <span class="timeline-time">12:00</span>
-                    <span class="timeline-text">Lunch Break (Idle)</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
 
       <!-- ==================== VIEW 4: EMPLOYEES ==================== -->
       <section class="view view-employees" style="display: none;">
