@@ -256,7 +256,12 @@ document.addEventListener('DOMContentLoaded', () => {
           const userNameEl = card.querySelector(".screen-card-name");
           if (userNameEl) userNameEl.textContent = data.user;
           const osEl = card.querySelector(".screen-card-os");
-          if (osEl) osEl.innerHTML = '<i class="ph ph-windows-logo"></i> ' + data.device;
+          if (osEl) {
+            let iconClass = 'ph-windows-logo';
+            if (data.device.toLowerCase().includes('mac')) iconClass = 'ph-apple-logo';
+            else if (data.device.toLowerCase().includes('linux')) iconClass = 'ph-linux-logo';
+            osEl.innerHTML = `<i class="ph ${iconClass}"></i> ` + data.device;
+          }
           
           const notifList = document.querySelector(".notif-list");
           if (notifList) {
