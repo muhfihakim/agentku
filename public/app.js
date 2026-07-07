@@ -321,11 +321,27 @@ document.addEventListener('DOMContentLoaded', () => {
             const storageVal = document.querySelector('.storage-value');
             if (storageVal && data.storage !== undefined) storageVal.textContent = data.storage + '%';
 
-            const locationVal = document.querySelector('.location-value');
-            if (locationVal && data.city) {
-                locationVal.innerHTML = data.lat && data.lng 
-                  ? `<a href="https://www.google.com/maps/search/?api=1&query=${data.lat},${data.lng}" target="_blank" style="color:var(--primary); text-decoration:none;">${data.city} <i class="ph ph-arrow-up-right"></i></a>`
-                  : data.city;
+            const mapContainer = document.querySelector('.map-container');
+            const mapCity = document.querySelector('.location-city-name');
+            if (data.city && mapCity) {
+                mapCity.textContent = data.city;
+            }
+            if (data.lat && data.lng && mapContainer) {
+                const lngMin = data.lng - 0.01;
+                const latMin = data.lat - 0.01;
+                const lngMax = data.lng + 0.01;
+                const latMax = data.lat + 0.01;
+                const mapUrl = `https://www.openstreetmap.org/export/embed.html?bbox=${lngMin}%2C${latMin}%2C${lngMax}%2C${latMax}&layer=mapnik&marker=${data.lat}%2C${data.lng}`;
+                
+                let iframe = document.getElementById('mapFrame');
+                if (!iframe) {
+                    mapContainer.innerHTML = `<iframe id="mapFrame" width="100%" height="100%" frameborder="0" scrolling="no" marginheight="0" marginwidth="0" src="${mapUrl}"></iframe>`;
+                } else {
+                    // Update only if changed to prevent constant flashing
+                    if (iframe.src !== mapUrl) {
+                        iframe.src = mapUrl;
+                    }
+                }
             }
 
             const batteryVal = document.querySelector('.battery-value');

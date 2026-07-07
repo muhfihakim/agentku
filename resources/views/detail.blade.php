@@ -24,6 +24,21 @@
             <span>Full Screen</span>
           </button>
         </div>
+        
+        <!-- Location Map Card -->
+        <div class="detail-card" style="margin-top: 20px;">
+          <h3 class="detail-card-title">
+            <i class="ph ph-map-pin"></i>
+            Location Map (<span class="location-city-name">{{ $data['city'] ?? 'Unknown' }}</span>)
+          </h3>
+          <div class="map-container" style="width: 100%; height: 300px; border-radius: 8px; overflow: hidden; margin-top: 10px; background:var(--gray-800);">
+            @if(isset($data['lat']) && isset($data['lng']))
+              <iframe id="mapFrame" width="100%" height="100%" frameborder="0" scrolling="no" marginheight="0" marginwidth="0" src="https://www.openstreetmap.org/export/embed.html?bbox={{ $data['lng']-0.01 }}%2C{{ $data['lat']-0.01 }}%2C{{ $data['lng']+0.01 }}%2C{{ $data['lat']+0.01 }}&amp;layer=mapnik&amp;marker={{ $data['lat'] }}%2C{{ $data['lng'] }}"></iframe>
+            @else
+              <div id="mapFramePlaceholder" style="width:100%; height:100%; display:flex; align-items:center; justify-content:center; color:var(--gray-400);">Location Data Unavailable</div>
+            @endif
+          </div>
+        </div>
       </div>
 
       <!-- Right: Detail Info -->
@@ -56,10 +71,6 @@
             <div class="detail-info-row">
               <span class="detail-info-label">Network</span>
               <span class="detail-info-value ssid-value">{{ $data['ssid'] ?? 'Unknown' }}</span>
-            </div>
-            <div class="detail-info-row">
-              <span class="detail-info-label">Location (City)</span>
-              <span class="detail-info-value location-value">{{ $data['city'] ?? 'Unknown' }}</span>
             </div>
             <div class="detail-info-row">
               <span class="detail-info-label">Battery</span>
