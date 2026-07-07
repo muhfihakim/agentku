@@ -331,6 +331,22 @@ document.addEventListener('DOMContentLoaded', () => {
                     appsList.appendChild(row);
                 });
             }
+            
+            if (window.networkChart) {
+                const now = new Date();
+                const timeLabel = now.getHours() + ':' + now.getMinutes() + ':' + now.getSeconds();
+                
+                window.networkChart.data.labels.push(timeLabel);
+                window.networkChart.data.datasets[0].data.push(data.net_download || 0);
+                window.networkChart.data.datasets[1].data.push(data.net_upload || 0);
+                
+                if (window.networkChart.data.labels.length > 20) {
+                    window.networkChart.data.labels.shift();
+                    window.networkChart.data.datasets[0].data.shift();
+                    window.networkChart.data.datasets[1].data.shift();
+                }
+                window.networkChart.update();
+            }
           }
         }
       });
@@ -538,6 +554,53 @@ document.addEventListener('DOMContentLoaded', () => {
         });
       } else {
         document.exitFullscreen();
+      }
+    });
+  }
+
+
+  // ──────────────────────────────────────────────
+  // NETWORK CHART INITIALIZATION
+  // ──────────────────────────────────────────────
+  window.networkChart = null;
+  const ctx = document.getElementById('networkChart');
+  if (ctx) {
+    window.networkChart = new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: [],
+        datasets: [
+          {
+            label: 'Download (KB/s)',
+            borderColor: '#3B82F6',
+            backgroundColor: 'rgba(59, 130, 246, 0.1)',
+            data: [],
+            fill: true,
+            tension: 0.4
+          },
+          {
+            label: 'Upload (KB/s)',
+            borderColor: '#10B981',
+            backgroundColor: 'rgba(16, 185, 129, 0.1)',
+            data: [],
+            fill: true,
+            tension: 0.4
+          }
+        ]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        animation: { duration: 0 },
+        scales: {
+          x: { display: false },
+          y: { beginAtZero: true, suggestedMax: 100 }
+        },
+        plugins: {
+          legend: {
+            labels: { color: 'var(--gray-400)' }
+          }
+        }
       }
     });
   }

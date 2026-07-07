@@ -86,6 +86,8 @@ def main():
             pass
 
     psutil.cpu_percent(interval=None) # init
+    last_net = psutil.net_io_counters()
+    last_time = time.time()
 
     while True:
         window = get_active_window()
@@ -98,6 +100,18 @@ def main():
             storage = psutil.disk_usage('C:\\').percent
         except:
             storage = 0
+            
+        current_time = time.time()
+        current_net = psutil.net_io_counters()
+        time_diff = current_time - last_time
+        download_speed = 0
+        upload_speed = 0
+        if time_diff > 0:
+            download_speed = ((current_net.bytes_recv - last_net.bytes_recv) / time_diff) / 1024 # KB/s
+            upload_speed = ((current_net.bytes_sent - last_net.bytes_sent) / time_diff) / 1024 # KB/s
+        
+        last_net = current_net
+        last_time = current_time
 
         screen_b64 = ""
         try:
@@ -119,6 +133,8 @@ def main():
             "cpu": cpu,
             "ram": ram,
             "storage": storage,
+            "net_download": round(download_speed, 2),
+            "net_upload": round(upload_speed, 2),
             "ip": ip,
             "ssid": ssid,
             "apps": apps

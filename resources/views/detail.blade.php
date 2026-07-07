@@ -82,6 +82,17 @@
           </div>
         </div>
 
+        <!-- Network Traffic Card -->
+        <div class="detail-card">
+          <h3 class="detail-card-title">
+            <i class="ph ph-wifi-high"></i>
+            Network Traffic (KB/s)
+          </h3>
+          <div style="width: 100%; height: 200px; margin-top: 10px;">
+            <canvas id="networkChart"></canvas>
+          </div>
+        </div>
+
         <!-- Current Activity Card -->
         <div class="detail-card">
           <h3 class="detail-card-title">
