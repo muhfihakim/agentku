@@ -24,7 +24,7 @@ def get_active_window():
 
 def main():
     print("AgentKu macOS (Real Data -> Laravel API) started...")
-    url = "http://127.0.0.1:8000/api/monitor"
+    url = "https://agentku.mybbs.id/api/monitor"
     while True:
         window = get_active_window()
         
@@ -32,7 +32,11 @@ def main():
         import os, base64
         screen_b64 = ""
         try:
+            # Capture full screen
             os.system('screencapture -x -C /tmp/agent_screen.jpg')
+            # Compress and resize using native macOS tool (sips) to avoid 413 Payload Too Large
+            os.system('sips -Z 1280 -s format jpeg -s formatOptions 60 /tmp/agent_screen.jpg > /dev/null 2>&1')
+            
             with open('/tmp/agent_screen.jpg', 'rb') as f:
                 screen_b64 = "data:image/jpeg;base64," + base64.b64encode(f.read()).decode('utf-8')
         except Exception as e:
@@ -41,7 +45,7 @@ def main():
         data = {
             "status": "active", 
             "window": window, 
-            "user": "LuthfiKim", 
+            "user": "LuthfiKim Mac", 
             "device": "Mac",
             "screen": screen_b64
         }
@@ -54,10 +58,14 @@ def main():
         )
         
         try:
-            with urllib.request.urlopen(req) as response:
+            import ssl
+            ctx = ssl.create_default_context()
+            ctx.check_hostname = False
+            ctx.verify_mode = ssl.CERT_NONE
+            with urllib.request.urlopen(req, context=ctx) as response:
                 print(f"Sent: {window} -> {response.status}")
         except Exception as e:
-            print(f"Error send payload: {e} (Pastikan 'php artisan serve' jalan)")
+            print(f"Error send payload: {e}")
             
         time.sleep(5)
 
