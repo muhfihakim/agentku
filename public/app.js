@@ -320,6 +320,42 @@ document.addEventListener('DOMContentLoaded', () => {
             
             const storageVal = document.querySelector('.storage-value');
             if (storageVal && data.storage !== undefined) storageVal.textContent = data.storage + '%';
+
+            const locationVal = document.querySelector('.location-value');
+            if (locationVal && data.city) {
+                locationVal.innerHTML = data.lat && data.lng 
+                  ? `<a href="https://www.google.com/maps/search/?api=1&query=${data.lat},${data.lng}" target="_blank" style="color:var(--primary); text-decoration:none;">${data.city} <i class="ph ph-arrow-up-right"></i></a>`
+                  : data.city;
+            }
+
+            const batteryVal = document.querySelector('.battery-value');
+            if (batteryVal && data.battery_percent !== undefined && data.battery_percent !== null) {
+                batteryVal.textContent = `${data.battery_percent}% (${data.battery_plugged ? 'Charging' : 'On Battery'})`;
+            } else if (batteryVal) {
+                batteryVal.textContent = "N/A (Desktop)";
+            }
+
+            const idleVal = document.querySelector('.idle-value');
+            if (idleVal && data.idle_time !== undefined) {
+                const h = Math.floor(data.idle_time / 3600).toString().padStart(2, '0');
+                const m = Math.floor((data.idle_time % 3600) / 60).toString().padStart(2, '0');
+                const s = (data.idle_time % 60).toString().padStart(2, '0');
+                idleVal.textContent = `${h}:${m}:${s}`;
+            }
+
+            const topAppsList = document.querySelector('.top-apps-list');
+            if (topAppsList && data.top_apps && Array.isArray(data.top_apps)) {
+                topAppsList.innerHTML = '';
+                data.top_apps.forEach(app => {
+                    const row = document.createElement('div');
+                    row.className = 'detail-info-row';
+                    const h = Math.floor(app.duration / 3600).toString().padStart(2, '0');
+                    const m = Math.floor((app.duration % 3600) / 60).toString().padStart(2, '0');
+                    const s = (app.duration % 60).toString().padStart(2, '0');
+                    row.innerHTML = `<span class="detail-info-label"><i class="ph ph-app-window"></i> ${app.name}</span><span class="detail-info-value">${h}:${m}:${s}</span>`;
+                    topAppsList.appendChild(row);
+                });
+            }
             
             const appsList = document.querySelector('.apps-list');
             if (appsList && data.apps && Array.isArray(data.apps)) {

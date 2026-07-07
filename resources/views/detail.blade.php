@@ -57,6 +57,40 @@
               <span class="detail-info-label">Network</span>
               <span class="detail-info-value ssid-value">{{ $data['ssid'] ?? 'Unknown' }}</span>
             </div>
+            <div class="detail-info-row">
+              <span class="detail-info-label">Location (City)</span>
+              <span class="detail-info-value location-value">{{ $data['city'] ?? 'Unknown' }}</span>
+            </div>
+            <div class="detail-info-row">
+              <span class="detail-info-label">Battery</span>
+              <span class="detail-info-value battery-value">
+                @if(isset($data['battery_percent']))
+                  {{ $data['battery_percent'] }}% ({{ $data['battery_plugged'] ? 'Charging' : 'On Battery' }})
+                @else
+                  N/A (Desktop)
+                @endif
+              </span>
+            </div>
+            <div class="detail-info-row">
+              <span class="detail-info-label">Idle Time</span>
+              <span class="detail-info-value idle-value">{{ isset($data['idle_time']) ? gmdate("H:i:s", $data['idle_time']) : '00:00:00' }}</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Top Apps Duration Card -->
+        <div class="detail-card">
+          <h3 class="detail-card-title">
+            <i class="ph ph-clock"></i>
+            Top Apps (Duration)
+          </h3>
+          <div class="detail-card-grid top-apps-list">
+            @foreach($data['top_apps'] ?? [] as $app)
+              <div class="detail-info-row">
+                <span class="detail-info-label"><i class="ph ph-app-window"></i> {{ $app['name'] }}</span>
+                <span class="detail-info-value">{{ gmdate("H:i:s", $app['duration']) }}</span>
+              </div>
+            @endforeach
           </div>
         </div>
 

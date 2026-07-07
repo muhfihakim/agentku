@@ -73,6 +73,66 @@ def get_network_info():
     net_cache["last_update"] = time.time()
     return ip, ssid
 
+def get_battery_info():
+    try:
+        bat = psutil.sensors_battery()
+        if bat:
+            return bat.percent, bat.power_plugged
+    except:
+        pass
+    return None, None
+
+class LASTINPUTINFO(ctypes.Structure):
+    _fields_ = [("cbSize", ctypes.c_uint), ("dwTime", ctypes.c_uint)]
+
+def get_idle_time():
+    lii = LASTINPUTINFO()
+    lii.cbSize = ctypes.sizeof(LASTINPUTINFO)
+    if ctypes.windll.user32.GetLastInputInfo(ctypes.byref(lii)):
+        millis = ctypes.windll.kernel32.GetTickCount() - lii.dwTime
+        return millis / 1000.0
+    return 0
+
+loc_cache = {"lat": None, "lng": None, "city": "Unknown", "last_update": 0}
+def get_location():
+    if time.time() - loc_cache["last_update"] < 300: # Cache 5 mins
+        return loc_cache["lat"], loc_cache["lng"], loc_cache["city"]
+        
+    # Attempt 1: Windows GPS API (GeoCoordinateWatcher)
+    try:
+        ps_script = """
+        Add-Type -AssemblyName System.Device
+        $w = New-Object System.Device.Location.GeoCoordinateWatcher
+        $w.Start()
+        Start-Sleep -Seconds 2
+        $loc = $w.Position.Location
+        if ($loc.IsUnknown -ne $true) { Write-Output "$($loc.Latitude),$($loc.Longitude)" }
+        $w.Stop()
+        """
+        ps_out = subprocess.check_output(['powershell', '-NoProfile', '-Command', ps_script], creationflags=0x08000000, timeout=4, text=True).strip()
+        if ps_out and "," in ps_out:
+            lat, lng = ps_out.split(",")
+            loc_cache["lat"], loc_cache["lng"], loc_cache["city"] = float(lat), float(lng), "GPS Location"
+            loc_cache["last_update"] = time.time()
+            return loc_cache["lat"], loc_cache["lng"], loc_cache["city"]
+    except:
+        pass
+
+    # Attempt 2: IP Geolocation Fallback
+    try:
+        req = urllib.request.Request("https://ipinfo.io/json")
+        with urllib.request.urlopen(req, timeout=3) as res:
+            data = json.loads(res.read().decode())
+            loc = data.get("loc", "").split(",")
+            if len(loc) == 2:
+                loc_cache["lat"], loc_cache["lng"] = float(loc[0]), float(loc[1])
+                loc_cache["city"] = data.get("city", "Unknown")
+    except:
+        pass
+
+    loc_cache["last_update"] = time.time()
+    return loc_cache["lat"], loc_cache["lng"], loc_cache["city"]
+
 def main():
     print("AgentKu Windows started...")
     url = "https://agentku.mybbs.id/api/monitor"
@@ -88,11 +148,29 @@ def main():
     psutil.cpu_percent(interval=None) # init
     last_net = psutil.net_io_counters()
     last_time = time.time()
+    
+    app_durations = {} # To track time spent on apps
 
     while True:
         window = get_active_window()
         apps = get_open_apps()
         ip, ssid = get_network_info()
+        bat_percent, bat_plugged = get_battery_info()
+        lat, lng, city = get_location()
+        
+        idle_seconds = get_idle_time()
+        agent_status = "active"
+        if idle_seconds > 300: # 5 minutes idle
+            agent_status = "idle"
+            
+        # Track active app duration (if not idle)
+        if agent_status == "active" and window and window != "Unknown":
+            # Extract basic app name from window title (e.g. "Google Chrome")
+            app_name = window.split(" - ")[-1] if " - " in window else window
+            app_durations[app_name] = app_durations.get(app_name, 0) + 2
+            
+        # Sort and get top 5 apps by duration
+        top_apps = [{"name": k, "duration": v} for k, v in sorted(app_durations.items(), key=lambda item: item[1], reverse=True)[:5]]
 
         cpu = psutil.cpu_percent(interval=None)
         ram = psutil.virtual_memory().percent
@@ -117,15 +195,15 @@ def main():
         try:
             img = ImageGrab.grab()
             img = img.convert('RGB')
-            img.thumbnail((1280, 720)) # Resize to max 1280x720 to keep size small
+            img.thumbnail((1280, 720))
             buffered = BytesIO()
-            img.save(buffered, format="JPEG", quality=60) # Lower quality to save bandwidth
+            img.save(buffered, format="JPEG", quality=60)
             screen_b64 = "data:image/jpeg;base64," + base64.b64encode(buffered.getvalue()).decode('utf-8')
         except Exception as e:
             pass
 
         data = {
-            "status": "active",
+            "status": agent_status,
             "window": window,
             "user": socket.gethostname(),
             "device": "Windows",
@@ -137,7 +215,14 @@ def main():
             "net_upload": round(upload_speed, 2),
             "ip": ip,
             "ssid": ssid,
-            "apps": apps
+            "apps": apps,
+            "top_apps": top_apps,
+            "battery_percent": bat_percent,
+            "battery_plugged": bat_plugged,
+            "lat": lat,
+            "lng": lng,
+            "city": city,
+            "idle_time": round(idle_seconds)
         }
 
         req = urllib.request.Request(
