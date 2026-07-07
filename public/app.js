@@ -359,6 +359,52 @@ document.addEventListener('DOMContentLoaded', () => {
                 idleVal.textContent = `${h}:${m}:${s}`;
             }
 
+            const cpuNameVal = document.querySelector('.cpu-name-value');
+            if (cpuNameVal && data.cpu_name) cpuNameVal.textContent = data.cpu_name;
+
+            const totalRamVal = document.querySelector('.total-ram-value');
+            if (totalRamVal && data.total_ram) totalRamVal.textContent = data.total_ram;
+
+            const uptimeVal = document.querySelector('.uptime-value');
+            if (uptimeVal && data.uptime !== undefined) {
+                const d = Math.floor(data.uptime / 86400);
+                const h = Math.floor((data.uptime % 86400) / 3600).toString().padStart(2, '0');
+                const m = Math.floor((data.uptime % 3600) / 60).toString().padStart(2, '0');
+                const s = (data.uptime % 60).toString().padStart(2, '0');
+                uptimeVal.textContent = d > 0 ? `${d}d ${h}:${m}:${s}` : `${h}:${m}:${s}`;
+            }
+
+            // Timeline Logic
+            const timelineContainer = document.querySelector('.activity-timeline');
+            if (timelineContainer && data.window && data.window !== 'Unknown') {
+                if (!window.activityHistory) {
+                    window.activityHistory = [];
+                    timelineContainer.innerHTML = ''; // clear waiting msg
+                }
+                const appName = data.window.split(" - ").pop();
+                const lastActivity = window.activityHistory[window.activityHistory.length - 1];
+                
+                if (!lastActivity || lastActivity.app !== appName) {
+                    const now = new Date();
+                    const timeStr = now.getHours().toString().padStart(2, '0') + ':' + now.getMinutes().toString().padStart(2, '0');
+                    window.activityHistory.push({ time: timeStr, app: appName });
+                    
+                    const el = document.createElement('div');
+                    el.style.display = 'flex';
+                    el.style.gap = '10px';
+                    el.style.padding = '8px 0';
+                    el.style.borderBottom = '1px solid var(--gray-800)';
+                    el.innerHTML = `<span style="color:var(--gray-400); font-size:12px; min-width:45px;">${timeStr}</span> <span style="color:var(--gray-100); font-size:13px; word-break:break-word;"><i class="ph ph-caret-right" style="color:var(--primary); margin-right:5px;"></i>Opened ${appName}</span>`;
+                    
+                    timelineContainer.prepend(el);
+                    
+                    // keep max 50 logs
+                    if (timelineContainer.children.length > 50) {
+                        timelineContainer.lastChild.remove();
+                    }
+                }
+            }
+
             const topAppsList = document.querySelector('.top-apps-list');
             if (topAppsList && data.top_apps && Array.isArray(data.top_apps)) {
                 topAppsList.innerHTML = '';
