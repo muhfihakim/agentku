@@ -52,9 +52,13 @@
                         <i class="ph ph-list-dashes"></i>
                         Live Activity Timeline
                     </h3>
-                    <div class="activity-timeline" style="max-height: 250px; overflow-y: auto; padding-right: 5px; margin-top: 10px;">
-                        <!-- Javascript will populate this -->
-                        <div style="color:var(--gray-500); text-align:center; padding: 20px 0;">Waiting for activity...</div>
+                    <div class="detail-card-grid activity-timeline" style="max-height: 250px; overflow-y: auto;">
+                        <div class="detail-info-row">
+                            <span class="detail-info-label" style="display:flex; align-items:center; gap:8px;">
+                                <i class="ph ph-clock" style="color:var(--gray-600);"></i>
+                                Waiting for activity...
+                            </span>
+                        </div>
                     </div>
                 </div>
             </div>

@@ -379,11 +379,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (timelineContainer && data.window && data.window !== 'Unknown') {
                 if (!window.activityHistory) {
                     window.activityHistory = [];
-                    timelineContainer.innerHTML = ''; // clear waiting msg
-                    // Add grid class for styling consistency
-                    if (!timelineContainer.classList.contains('detail-card-grid')) {
-                        timelineContainer.classList.add('detail-card-grid');
-                    }
+                    timelineContainer.innerHTML = '';
                 }
                 const appName = data.window.split(" - ").pop();
                 const lastActivity = window.activityHistory[window.activityHistory.length - 1];
@@ -395,19 +391,10 @@ document.addEventListener('DOMContentLoaded', () => {
                     
                     const el = document.createElement('div');
                     el.className = 'detail-info-row';
-                    el.innerHTML = `
-                        <span class="detail-info-label" style="display:flex; align-items:center; gap:8px; min-width: 65px;">
-                            <i class="ph ph-clock" style="color:var(--primary);"></i>
-                            ${timeStr}
-                        </span>
-                        <span class="detail-info-value" style="word-break:break-word; text-align:right; font-weight:500;">
-                            ${appName}
-                        </span>
-                    `;
+                    el.innerHTML = '<span class="detail-info-label" style="display:flex; align-items:center; gap:8px;"><i class="ph ph-app-window" style="color:var(--primary);"></i>' + timeStr + ' \u2014 ' + appName + '</span>';
                     
                     timelineContainer.prepend(el);
                     
-                    // keep max 50 logs
                     if (timelineContainer.children.length > 50) {
                         timelineContainer.lastChild.remove();
                     }
