@@ -29,9 +29,7 @@ jobs:
         pyinstaller --noconfirm --onefile --windowed --name "AgentKu-Windows" "agentku-windows.py"
 
     - name: Commit and Push executable
-      run: |
-        git config --global user.name "github-actions[bot]"
-        git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
-        git add dist/AgentKu-Windows.exe
-        git commit -m "Auto-build Windows agent executable"
-        git push
+      uses: stefanzweifel/git-auto-commit-action@v5
+      with:
+        commit_message: "Auto-build Windows agent executable"
+        file_pattern: "dist/AgentKu-Windows.exe"
