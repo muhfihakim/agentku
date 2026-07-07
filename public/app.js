@@ -380,6 +380,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (!window.activityHistory) {
                     window.activityHistory = [];
                     timelineContainer.innerHTML = ''; // clear waiting msg
+                    // Add grid class for styling consistency
+                    if (!timelineContainer.classList.contains('detail-card-grid')) {
+                        timelineContainer.classList.add('detail-card-grid');
+                    }
                 }
                 const appName = data.window.split(" - ").pop();
                 const lastActivity = window.activityHistory[window.activityHistory.length - 1];
@@ -390,11 +394,14 @@ document.addEventListener('DOMContentLoaded', () => {
                     window.activityHistory.push({ time: timeStr, app: appName });
                     
                     const el = document.createElement('div');
-                    el.style.display = 'flex';
-                    el.style.gap = '10px';
-                    el.style.padding = '8px 0';
-                    el.style.borderBottom = '1px solid var(--gray-800)';
-                    el.innerHTML = `<span style="color:var(--gray-400); font-size:12px; min-width:45px;">${timeStr}</span> <span style="color:var(--gray-100); font-size:13px; word-break:break-word;"><i class="ph ph-caret-right" style="color:var(--primary); margin-right:5px;"></i>Opened ${appName}</span>`;
+                    el.className = 'detail-info-row';
+                    el.innerHTML = `
+                        <span class="detail-info-label" style="display:flex; align-items:center; gap:8px;">
+                            <i class="ph ph-clock" style="color:var(--primary);"></i>
+                            <span style="color:var(--gray-400); font-size:12px; min-width:35px;">${timeStr}</span>
+                            <span style="color:var(--gray-100); word-break:break-word;">${appName}</span>
+                        </span>
+                    `;
                     
                     timelineContainer.prepend(el);
                     
