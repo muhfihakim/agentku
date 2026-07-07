@@ -396,10 +396,12 @@ document.addEventListener('DOMContentLoaded', () => {
                     const el = document.createElement('div');
                     el.className = 'detail-info-row';
                     el.innerHTML = `
-                        <span class="detail-info-label" style="display:flex; align-items:center; gap:8px;">
+                        <span class="detail-info-label" style="display:flex; align-items:center; gap:8px; min-width: 65px;">
                             <i class="ph ph-clock" style="color:var(--primary);"></i>
-                            <span style="color:var(--gray-400); font-size:12px; min-width:35px;">${timeStr}</span>
-                            <span style="color:var(--gray-100); word-break:break-word;">${appName}</span>
+                            ${timeStr}
+                        </span>
+                        <span class="detail-info-value" style="word-break:break-word; text-align:right; font-weight:500;">
+                            ${appName}
                         </span>
                     `;
                     
