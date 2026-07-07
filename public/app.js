@@ -189,12 +189,13 @@ document.addEventListener('DOMContentLoaded', () => {
   if (typeof Pusher !== 'undefined' && !window.echoInstance) {
       window.Pusher = Pusher;
       const isHttps = window.location.protocol === 'https:';
+      const isLocalhost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
       window.echoInstance = new Echo({
           broadcaster: 'reverb',
           key: 'agenkukey',
           wsHost: window.location.hostname,
-          wsPort: 8080,
-          wssPort: 8080,
+          wsPort: isLocalhost ? 8080 : 80,
+          wssPort: isLocalhost ? 8080 : 443,
           forceTLS: isHttps,
           enabledTransports: ['ws', 'wss'],
       });
