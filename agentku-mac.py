@@ -42,10 +42,11 @@ def main():
         except Exception as e:
             print("Failed to capture screen:", e)
             
+        import socket
         data = {
             "status": "active", 
             "window": window, 
-            "user": "LuthfiKim Mac", 
+            "user": socket.gethostname(), 
             "device": "Mac",
             "screen": screen_b64
         }

