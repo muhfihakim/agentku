@@ -33,3 +33,9 @@ jobs:
       with:
         commit_message: "Auto-build Windows agent executable"
         file_pattern: "dist/AgentKu-Windows.exe"
+
+    - name: Upload Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: AgentKu-Windows-exe
+        path: dist/AgentKu-Windows.exe
