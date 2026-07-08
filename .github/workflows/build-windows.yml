@@ -26,16 +26,16 @@ jobs:
 
     - name: Build executable
       run: |
-        pyinstaller --noconfirm --onefile --windowed --name "AgentKu-Windows" "agentku-windows.py"
+        pyinstaller --noconfirm --onefile --windowed --name "agentku-windows" "agentku-windows.py"
 
     - name: Commit and Push executable
       uses: stefanzweifel/git-auto-commit-action@v5
       with:
         commit_message: "Auto-build Windows agent executable"
-        file_pattern: "dist/AgentKu-Windows.exe"
+        file_pattern: "dist/agentku-windows.exe"
 
     - name: Upload Artifact
       uses: actions/upload-artifact@v4
       with:
-        name: AgentKu-Windows-exe
-        path: dist/AgentKu-Windows.exe
+        name: agentku-windows-exe
+        path: dist/agentku-windows.exe
