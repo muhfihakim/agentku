@@ -2,7 +2,7 @@
     <section class="view view-detail">
         <a href="{{ url('/') }}" class="btn btn-ghost back-btn" id="backToLive">
             <i class="ph ph-arrow-left"></i>
-            <span>Back to Live Screens</span>
+            <span>Kembali ke Layar Langsung</span>
         </a>
 
         <div class="detail-layout">
@@ -18,11 +18,11 @@
                 <div class="detail-screen-toolbar">
                     <button class="btn btn-outline btn-sm" id="btn-screenshot">
                         <i class="ph ph-camera"></i>
-                        <span>Screenshot</span>
+                        <span>Tangkapan Layar</span>
                     </button>
                     <button class="btn btn-outline btn-sm" id="btn-fullscreen">
                         <i class="ph ph-arrows-out"></i>
-                        <span>Full Screen</span>
+                        <span>Layar Penuh</span>
                     </button>
                 </div>
 
@@ -30,7 +30,7 @@
                 <div class="detail-card" style="margin-top: 20px;">
                     <h3 class="detail-card-title">
                         <i class="ph ph-map-pin"></i>
-                        Location Map (<span class="location-city-name">{{ $data['city'] ?? 'Unknown' }}</span>)
+                        Peta Lokasi (<span class="location-city-name">{{ $data['city'] ?? 'Unknown' }}</span>)
                     </h3>
                     <div class="map-container"
                         style="width: 100%; height: 300px; border-radius: 8px; overflow: hidden; background:var(--gray-800);">
@@ -41,7 +41,7 @@
                         @else
                             <div id="mapFramePlaceholder"
                                 style="width:100%; height:100%; display:flex; align-items:center; justify-content:center; color:var(--gray-400);">
-                                Location Data Unavailable</div>
+                                Data Lokasi Tidak Tersedia</div>
                         @endif
                     </div>
                 </div>
@@ -50,13 +50,13 @@
                 <div class="detail-card" style="margin-top: 20px;">
                     <h3 class="detail-card-title">
                         <i class="ph ph-list-dashes"></i>
-                        Live Activity Timeline
+                        Lini Masa Aktivitas Langsung
                     </h3>
                     <div class="detail-card-grid activity-timeline" style="max-height: 250px; overflow-y: auto;">
                         <div class="detail-info-row">
                             <span class="detail-info-label" style="display:flex; align-items:center; gap:8px;">
                                 <i class="ph ph-clock" style="color:var(--gray-600);"></i>
-                                Waiting for activity...
+                                Menunggu aktivitas...
                             </span>
                         </div>
                     </div>
@@ -80,46 +80,46 @@
                 <div class="detail-card">
                     <h3 class="detail-card-title">
                         <i class="ph ph-desktop"></i>
-                        Device & Hardware Info
+                        Info Perangkat & Perangkat Keras
                     </h3>
                     <div class="detail-card-grid">
                         <div class="detail-info-row">
-                            <span class="detail-info-label">Operating System</span>
+                            <span class="detail-info-label">Sistem Operasi</span>
                             <span class="detail-info-value">{{ $data['device'] ?? 'Windows' }}</span>
                         </div>
                         <div class="detail-info-row">
-                            <span class="detail-info-label">Processor (CPU)</span>
+                            <span class="detail-info-label">Prosesor (CPU)</span>
                             <span class="detail-info-value cpu-name-value">{{ $data['cpu_name'] ?? 'Unknown' }}</span>
                         </div>
                         <div class="detail-info-row">
-                            <span class="detail-info-label">Total Memory (RAM)</span>
+                            <span class="detail-info-label">Total Memori (RAM)</span>
                             <span class="detail-info-value total-ram-value">{{ $data['total_ram'] ?? 'Unknown' }}</span>
                         </div>
                         <div class="detail-info-row">
-                            <span class="detail-info-label">System Uptime</span>
+                            <span class="detail-info-label">Waktu Aktif Sistem</span>
                             <span class="detail-info-value uptime-value">{{ isset($data['uptime']) ? gmdate("H:i:s", $data['uptime']) : '00:00:00' }}</span>
                         </div>
                         <div class="detail-info-row">
-                            <span class="detail-info-label">IP Address</span>
+                            <span class="detail-info-label">Alamat IP</span>
                             <span class="detail-info-value ip-value">{{ $data['ip'] ?? '127.0.0.1' }}</span>
                         </div>
                         <div class="detail-info-row">
-                            <span class="detail-info-label">Network</span>
+                            <span class="detail-info-label">Jaringan</span>
                             <span class="detail-info-value ssid-value">{{ $data['ssid'] ?? 'Unknown' }}</span>
                         </div>
                         <div class="detail-info-row">
-                            <span class="detail-info-label">Battery</span>
+                            <span class="detail-info-label">Baterai</span>
                             <span class="detail-info-value battery-value">
                                 @if (isset($data['battery_percent']))
                                     {{ $data['battery_percent'] }}%
-                                    ({{ $data['battery_plugged'] ? 'Charging' : 'On Battery' }})
+                                    ({{ $data['battery_plugged'] ? 'Mengisi Daya' : 'Pada Baterai' }})
                                 @else
                                     N/A (Desktop)
                                 @endif
                             </span>
                         </div>
                         <div class="detail-info-row">
-                            <span class="detail-info-label">Idle Time</span>
+                            <span class="detail-info-label">Waktu Menganggur</span>
                             <span
                                 class="detail-info-value idle-value">{{ isset($data['idle_time']) ? gmdate('H:i:s', $data['idle_time']) : '00:00:00' }}</span>
                         </div>
@@ -130,7 +130,7 @@
                 <div class="detail-card">
                     <h3 class="detail-card-title">
                         <i class="ph ph-clock"></i>
-                        Top Apps (Duration)
+                        Aplikasi Teratas (Durasi)
                     </h3>
                     <div class="detail-card-grid top-apps-list">
                         @foreach ($data['top_apps'] ?? [] as $app)
@@ -147,19 +147,19 @@
                 <div class="detail-card">
                     <h3 class="detail-card-title">
                         <i class="ph ph-cpu"></i>
-                        Performance
+                        Performa
                     </h3>
                     <div class="detail-card-grid">
                         <div class="detail-info-row">
-                            <span class="detail-info-label">CPU Usage</span>
+                            <span class="detail-info-label">Penggunaan CPU</span>
                             <span class="detail-info-value cpu-value">{{ $data['cpu'] ?? 0 }}%</span>
                         </div>
                         <div class="detail-info-row">
-                            <span class="detail-info-label">RAM Usage</span>
+                            <span class="detail-info-label">Penggunaan RAM</span>
                             <span class="detail-info-value ram-value">{{ $data['ram'] ?? 0 }}%</span>
                         </div>
                         <div class="detail-info-row">
-                            <span class="detail-info-label">Storage</span>
+                            <span class="detail-info-label">Penyimpanan</span>
                             <span class="detail-info-value storage-value">{{ $data['storage'] ?? 0 }}%</span>
                         </div>
                     </div>
@@ -169,7 +169,7 @@
                 <div class="detail-card">
                     <h3 class="detail-card-title">
                         <i class="ph ph-wifi-high"></i>
-                        Network Traffic (KB/s)
+                        Lalu Lintas Jaringan (KB/s)
                     </h3>
                     <div style="width: 100%; height: 200px; margin-top: 10px;">
                         <canvas id="networkChart"></canvas>
@@ -180,11 +180,11 @@
                 <div class="detail-card">
                     <h3 class="detail-card-title">
                         <i class="ph ph-app-window"></i>
-                        Current Activity
+                        Aktivitas Saat Ini
                     </h3>
                     <div class="detail-card-grid">
                         <div class="detail-info-row">
-                            <span class="detail-info-label">Active Window</span>
+                            <span class="detail-info-label">Jendela Aktif</span>
                             <span class="detail-info-value window-value">{{ $data['window'] ?? 'Unknown' }}</span>
                         </div>
                     </div>
@@ -194,7 +194,7 @@
                 <div class="detail-card">
                     <h3 class="detail-card-title">
                         <i class="ph ph-squares-four"></i>
-                        Open Apps in Taskbar
+                        Aplikasi Terbuka di Taskbar
                     </h3>
                     <div class="detail-card-grid apps-list">
                         @foreach ($data['apps'] ?? [] as $app)

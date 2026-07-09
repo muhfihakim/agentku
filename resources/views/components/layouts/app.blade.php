@@ -34,15 +34,32 @@
         </div>
 
         <nav class="sidebar-nav">
+            @if(auth()->check() && auth()->user()->hasRole('Owner'))
+            <div class="sidebar-nav-section">
+                <span class="sidebar-nav-label">SAAS MANAGEMENT</span>
+                <a href="{{ route('owner.dashboard') }}" class="sidebar-nav-item {{ request()->routeIs('owner.dashboard') ? 'active' : '' }}">
+                    <i class="ph ph-buildings"></i>
+                    <span>Daftar Client</span>
+                </a>
+                <a href="{{ route('owner.billing') }}" class="sidebar-nav-item {{ request()->routeIs('owner.billing') ? 'active' : '' }}">
+                    <i class="ph ph-currency-circle-dollar"></i>
+                    <span>Billing & Paket</span>
+                </a>
+                <a href="{{ route('owner.settings') }}" class="sidebar-nav-item {{ request()->routeIs('owner.settings') ? 'active' : '' }}">
+                    <i class="ph ph-gear"></i>
+                    <span>Pengaturan Global</span>
+                </a>
+            </div>
+            @else
             <div class="sidebar-nav-section">
                 <span class="sidebar-nav-label">MAIN</span>
                 <a href="#" class="sidebar-nav-item" data-view="dashboard">
                     <i class="ph ph-squares-four"></i>
-                    <span>Dashboard</span>
+                    <span>Dasbor</span>
                 </a>
                 <a href="#" class="sidebar-nav-item active" data-view="live">
                     <i class="ph ph-monitor"></i>
-                    <span>Live Screens</span>
+                    <span>Layar Langsung</span>
                 </a>
             </div>
 
@@ -50,11 +67,11 @@
                 <span class="sidebar-nav-label">MANAGEMENT</span>
                 <a href="#" class="sidebar-nav-item" data-view="employees">
                     <i class="ph ph-users"></i>
-                    <span>Employees</span>
+                    <span>Karyawan</span>
                 </a>
                 <a href="#" class="sidebar-nav-item" data-view="departments">
                     <i class="ph ph-buildings"></i>
-                    <span>Departments</span>
+                    <span>Departemen</span>
                 </a>
             </div>
 
@@ -62,20 +79,24 @@
                 <span class="sidebar-nav-label">SYSTEM</span>
                 <a href="#" class="sidebar-nav-item" data-view="reports">
                     <i class="ph ph-chart-bar"></i>
-                    <span>Reports</span>
+                    <span>Laporan</span>
                 </a>
                 <a href="#" class="sidebar-nav-item" data-view="settings">
                     <i class="ph ph-gear"></i>
-                    <span>Settings</span>
+                    <span>Pengaturan</span>
                 </a>
             </div>
+            @endif
         </nav>
 
         <div class="sidebar-bottom">
-            <a href="#" class="sidebar-nav-item sidebar-signout">
-                <i class="ph ph-sign-out"></i>
-                <span>Sign Out</span>
-            </a>
+            <form method="POST" action="{{ route('logout') }}" id="logout-form">
+                @csrf
+                <a href="#" onclick="document.getElementById('logout-form').submit();" class="sidebar-nav-item sidebar-signout">
+                    <i class="ph ph-sign-out"></i>
+                    <span>Keluar</span>
+                </a>
+            </form>
         </div>
     </aside>
 
@@ -108,10 +129,10 @@
                 </button>
                 <div class="topbar-divider"></div>
                 <div class="topbar-admin">
-                    <div class="topbar-avatar">BS</div>
+                    <div class="topbar-avatar">{{ auth()->check() ? strtoupper(substr(auth()->user()->name, 0, 2)) : 'US' }}</div>
                     <div class="topbar-admin-info">
-                        <span class="topbar-admin-name">Admin Boss</span>
-                        <span class="topbar-admin-role">Super Admin</span>
+                        <span class="topbar-admin-name">{{ auth()->check() ? auth()->user()->name : 'Guest' }}</span>
+                        <span class="topbar-admin-role">{{ auth()->check() && auth()->user()->hasRole('Owner') ? 'SaaS Owner' : 'Tenant Admin' }}</span>
                     </div>
                     <i class="ph ph-caret-down"></i>
                 </div>

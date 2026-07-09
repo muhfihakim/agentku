@@ -3,14 +3,14 @@
       <!-- ==================== VIEW 1: DASHBOARD ==================== -->
       <section class="view view-dashboard" style="display: none;">
         <div class="page-header">
-          <h1 class="page-title">Dashboard</h1>
-          <p class="page-subtitle">Overview of all monitoring activity</p>
+          <h1 class="page-title">Dasbor</h1>
+          <p class="page-subtitle">Ringkasan semua aktivitas pemantauan</p>
         </div>
 
         <div class="stats-grid">
           <div class="stat-card stat-card--blue">
             <div class="stat-card-header">
-              <span class="stat-card-label">Total Employees</span>
+              <span class="stat-card-label">Total Karyawan</span>
               <div class="stat-card-icon blue">
                 <i class="ph ph-users"></i>
               </div>
@@ -24,7 +24,7 @@
 
           <div class="stat-card stat-card--green">
             <div class="stat-card-header">
-              <span class="stat-card-label">Online Now</span>
+              <span class="stat-card-label">Online Saat Ini</span>
               <div class="stat-card-icon green">
                 <i class="ph ph-wifi-high"></i>
               </div>
@@ -38,7 +38,7 @@
 
           <div class="stat-card stat-card--yellow">
             <div class="stat-card-header">
-              <span class="stat-card-label">Idle</span>
+              <span class="stat-card-label">Menganggur</span>
               <div class="stat-card-icon yellow">
                 <i class="ph ph-clock"></i>
               </div>
@@ -67,7 +67,7 @@
 
         <div class="card">
           <div class="card-header">
-            <h2 class="card-title">Recent Activity</h2>
+            <h2 class="card-title">Aktivitas Terbaru</h2>
             <button class="btn btn-ghost btn-sm">
               <i class="ph ph-dots-three"></i>
             </button>
@@ -76,11 +76,11 @@
             <table class="table">
               <thead>
                 <tr>
-                  <th>Employee</th>
-                  <th>Device</th>
+                  <th>Karyawan</th>
+                  <th>Perangkat</th>
                   <th>Status</th>
-                  <th>Last Active</th>
-                  <th>Current App</th>
+                  <th>Aktivitas Terakhir</th>
+                  <th>Aplikasi Saat Ini</th>
                 </tr>
               </thead>
               <tbody>
@@ -189,24 +189,24 @@
       <!-- ==================== VIEW 2: LIVE SCREENS ==================== -->
       <section class="view view-live">
         <div class="page-header">
-          <h1 class="page-title">Live Screens</h1>
-          <p class="page-subtitle">Real-time screen monitoring</p>
+          <h1 class="page-title">Layar Langsung</h1>
+          <p class="page-subtitle">Pemantauan layar waktu nyata (real-time)</p>
         </div>
 
         <div class="toolbar">
           <div class="toolbar-left">
             <div class="select-wrapper">
               <select class="select" id="statusFilter">
-                <option value="all">All Status</option>
+                <option value="all">Semua Status</option>
                 <option value="active">Online</option>
-                <option value="idle">Idle</option>
-                <option value="offline">Offline</option>
+                <option value="idle">Menganggur</option>
+                <option value="offline">Luring</option>
               </select>
               <i class="ph ph-caret-down"></i>
             </div>
             <div class="toolbar-search">
               <i class="ph ph-magnifying-glass"></i>
-              <input type="text" placeholder="Search employees..." id="monitorSearch">
+              <input type="text" placeholder="Cari karyawan..." id="monitorSearch">
             </div>
           </div>
           <div class="toolbar-right">
@@ -220,11 +220,11 @@
             </div>
             <a href="{{ asset('downloads/AgentKu_Setup.exe') }}" download class="btn btn-primary" style="text-decoration: none;">
               <i class="ph ph-download-simple"></i>
-              <span>Download Agent</span>
+              <span>Unduh Agen</span>
             </a>
             <button class="btn btn-outline" id="refreshBtn">
               <i class="ph ph-arrow-clockwise"></i>
-              <span>Refresh</span>
+              <span>Segarkan</span>
             </button>
           </div>
         </div>
@@ -238,8 +238,8 @@
       <section class="view view-employees" style="display: none;">
         <div class="page-header">
           <div>
-            <h1 class="page-title">Employees</h1>
-            <p class="page-subtitle">Manage monitored employees</p>
+            <h1 class="page-title">Karyawan</h1>
+            <p class="page-subtitle">Kelola karyawan yang dipantau</p>
           </div>
         </div>
 
@@ -247,13 +247,13 @@
           <div class="toolbar-left">
             <div class="toolbar-search">
               <i class="ph ph-magnifying-glass"></i>
-              <input type="text" placeholder="Search employees...">
+              <input type="text" placeholder="Cari karyawan...">
             </div>
           </div>
           <div class="toolbar-right">
             <button class="btn btn-primary">
               <i class="ph ph-plus"></i>
-              <span>Add Employee</span>
+              <span>Tambah Karyawan</span>
             </button>
           </div>
         </div>
@@ -263,13 +263,13 @@
             <table class="table">
               <thead>
                 <tr>
-                  <th>Name</th>
-                  <th>Department</th>
-                  <th>Device</th>
-                  <th>OS</th>
+                  <th>Nama</th>
+                  <th>Departemen</th>
+                  <th>Perangkat</th>
+                  <th>Sistem Operasi</th>
                   <th>Status</th>
-                  <th>Last Active</th>
-                  <th>Actions</th>
+                  <th>Aktivitas Terakhir</th>
+                  <th>Aksi</th>
                 </tr>
               </thead>
               <tbody>

@@ -703,8 +703,16 @@ document.addEventListener('DOMContentLoaded', () => {
   // ──────────────────────────────────────────────
   // INITIAL STATE
   // ──────────────────────────────────────────────
-  const activeNav = document.querySelector('.sidebar-nav-item.active[data-view]');
-  const initialView = activeNav ? activeNav.getAttribute('data-view') : 'live';
-  switchView(initialView || 'live', activeNav);
+  const hasDataView = document.querySelector('.sidebar-nav-item[data-view]');
+  if (hasDataView) {
+      const activeNav = document.querySelector('.sidebar-nav-item.active[data-view]');
+      const initialView = activeNav ? activeNav.getAttribute('data-view') : 'live';
+      switchView(initialView || 'live', activeNav);
+  } else {
+      // Prevent hiding the view on MPA pages (Owner dashboard)
+      Object.values(views).forEach(v => {
+          if (v) v.style.display = '';
+      });
+  }
   updateDashboardStats();
 });
