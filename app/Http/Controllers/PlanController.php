@@ -32,7 +32,7 @@ class PlanController extends Controller
             $html = '';
             
             if ($plans->isEmpty()) {
-                $html = '<tr><td colspan="7" class="empty-state-td" style="color: #6b7280; text-align: center; padding: 2rem;">Data tidak ditemukan</td></tr>';
+                $html = '<tr><td colspan="8" class="empty-state-td" style="color: #6b7280; text-align: center; padding: 2rem;">Data tidak ditemukan</td></tr>';
             } else {
                 $start = ($plans->currentPage() - 1) * $plans->perPage() + 1;
                 foreach ($plans as $index => $plan) {
