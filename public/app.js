@@ -6,54 +6,118 @@
 document.addEventListener('DOMContentLoaded', () => {
 
   // ──────────────────────────────────────────────
-  // 1. SIDEBAR NAVIGATION
+  // 1. SPA ROUTING & SKELETON LOADER
   // ──────────────────────────────────────────────
-  const navItems = document.querySelectorAll('.sidebar-nav-item[data-view]');
-  const views = {
-    dashboard: document.querySelector('.view-dashboard'),
-    live: document.querySelector('.view-live'),
-    employees: document.querySelector('.view-employees'),
-  };
+  const initSPA = () => {
+    const mainContent = document.getElementById('main-content');
+    const skeletonContainer = document.getElementById('skeleton-container');
+    
+    if (!mainContent || !skeletonContainer) return;
 
-  /**
-   * Switch the visible view panel and update nav active state.
-   */
-  const switchView = (viewName, navEl = null) => {
-    // Hide all views
-    Object.values(views).forEach((v) => {
-      if (v) {
-        v.style.display = 'none';
-        v.classList.remove('fadeIn');
-      }
-    });
+    // Handle Link Clicks
+    document.addEventListener('click', async (e) => {
+      const link = e.target.closest('a');
+      if (!link) return;
+      
+      const href = link.getAttribute('href');
+      // Skip non-SPA links (external, anchors, logout)
+      if (!href || href.startsWith('#') || link.hasAttribute('onclick') || href.includes('logout') || link.target === '_blank') return;
+      
+      // Ensure it's same origin
+      const url = new URL(href, window.location.origin);
+      if (url.origin !== window.location.origin) return;
 
-    // Show target view with fade animation
-    const target = views[viewName];
-    if (target) {
-      target.style.display = '';
-      void target.offsetWidth; // trigger reflow
-      target.classList.add('fadeIn');
-    }
-
-    // Update nav active states
-    if (navEl) {
-      navItems.forEach((n) => n.classList.remove('active'));
-      navEl.classList.add('active');
-    }
-  };
-
-  navItems.forEach((item) => {
-    item.addEventListener('click', (e) => {
       e.preventDefault();
-      const viewName = item.getAttribute('data-view');
-      if (viewName && views[viewName]) {
-        switchView(viewName, item);
-      } else {
-        window.location.href = '/';
-      }
+      navigateTo(url.pathname + url.search);
+      
+      // Close mobile sidebar if open
       closeSidebar();
     });
-  });
+
+    // Handle Browser Back/Forward
+    window.addEventListener('popstate', () => {
+      navigateTo(window.location.pathname + window.location.search, false);
+    });
+
+    async function navigateTo(url, push = true) {
+      // Update sidebar active states immediately
+      document.querySelectorAll('.sidebar-nav-item').forEach(el => {
+        el.classList.remove('active');
+        if (el.getAttribute('href') === url) el.classList.add('active');
+      });
+
+      // Determine Skeleton Type
+      let skeletonId = 'skeleton-table';
+      if (url.includes('/live')) {
+          skeletonId = 'skeleton-grid';
+      } else if (url.endsWith('/dashboard')) {
+          skeletonId = 'skeleton-dashboard';
+      }
+      
+      const skeletonLoader = document.getElementById(skeletonId);
+      
+      // Hide all skeletons first
+      document.querySelectorAll('.skeleton-wrapper').forEach(s => s.style.display = 'none');
+
+      // Show Skeleton
+      mainContent.style.opacity = '0';
+      
+      setTimeout(async () => {
+        mainContent.style.display = 'none';
+        skeletonContainer.style.display = 'block';
+        if (skeletonLoader) skeletonLoader.style.display = 'block';
+        
+        if (push) {
+          window.history.pushState(null, '', url);
+        }
+
+        try {
+          const response = await fetch(url, {
+            headers: {
+              'X-PJAX': 'true',
+              'X-Requested-With': 'XMLHttpRequest'
+            }
+          });
+          
+          if (!response.ok) throw new Error('Network error');
+          
+          const htmlString = await response.text();
+          const parser = new DOMParser();
+          const doc = parser.parseFromString(htmlString, 'text/html');
+          
+          const newMainContent = doc.getElementById('main-content');
+          const newTitle = doc.querySelector('title');
+          
+          if (newMainContent) {
+            mainContent.innerHTML = newMainContent.innerHTML;
+            if (newTitle) document.title = newTitle.innerText;
+            
+            // Re-initialize any JS scripts or plugins here if needed
+            if (typeof initLiveMonitors === 'function') initLiveMonitors();
+          } else {
+            // Fallback for full page reload if structure is wrong
+            window.location.href = url;
+            return;
+          }
+        } catch (error) {
+          console.error('SPA Navigation Error:', error);
+          window.location.href = url;
+          return;
+        }
+
+        // Hide Skeleton and Show Content
+        skeletonContainer.style.display = 'none';
+        if (skeletonLoader) skeletonLoader.style.display = 'none';
+        mainContent.style.display = 'block';
+        
+        // Trigger reflow for transition
+        void mainContent.offsetWidth;
+        mainContent.style.opacity = '1';
+      }, 200); // Small delay to allow fade out
+    }
+  };
+  
+  initSPA();
 
   // ──────────────────────────────────────────────
   // 2. MOBILE SIDEBAR TOGGLE
@@ -703,17 +767,6 @@ document.addEventListener('DOMContentLoaded', () => {
   // ──────────────────────────────────────────────
   // INITIAL STATE
   // ──────────────────────────────────────────────
-  const hasDataView = document.querySelector('.sidebar-nav-item[data-view]');
-  if (hasDataView) {
-      const activeNav = document.querySelector('.sidebar-nav-item.active[data-view]');
-      const initialView = activeNav ? activeNav.getAttribute('data-view') : 'live';
-      switchView(initialView || 'live', activeNav);
-  } else {
-      // Prevent hiding the view on MPA pages (Owner dashboard)
-      Object.values(views).forEach(v => {
-          if (v) v.style.display = '';
-      });
-  }
   updateDashboardStats();
 
   // WebSocket Connection Status Badge

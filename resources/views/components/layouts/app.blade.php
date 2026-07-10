@@ -72,6 +72,24 @@
         .dropdown-item i {
             font-size: 1.25rem;
         }
+        
+        /* Skeleton Loading Styles */
+        .skeleton {
+            background: linear-gradient(90deg, #f3f4f6 25%, #e5e7eb 50%, #f3f4f6 75%);
+            background-size: 200% 100%;
+            animation: skeleton-loading 1.5s infinite;
+        }
+        .skeleton-text {
+            border-radius: 0.25rem;
+        }
+        @keyframes skeleton-loading {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+        
+        #main-content {
+            transition: opacity 0.2s ease-out;
+        }
     </style>
 </head>
 
@@ -232,9 +250,69 @@
         </header>
 
         <!-- Content Area -->
-        <main class="content">
+        <main class="content" id="main-content">
             {{ $slot }}
         </main>
+        
+        <!-- Skeletons (Hidden by default) -->
+        <div id="skeleton-container" style="display: none;">
+            
+            <!-- Dashboard Skeleton -->
+            <div class="content skeleton-wrapper" id="skeleton-dashboard" style="display: none;">
+                <div style="display: flex; justify-content: space-between; margin-bottom: 2rem;">
+                    <div>
+                        <div class="skeleton skeleton-text" style="width: 250px; height: 32px; margin-bottom: 0.5rem;"></div>
+                        <div class="skeleton skeleton-text" style="width: 350px; height: 20px;"></div>
+                    </div>
+                </div>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1.5rem; margin-bottom: 2rem;">
+                    <div class="skeleton" style="height: 120px; border-radius: 1rem;"></div>
+                    <div class="skeleton" style="height: 120px; border-radius: 1rem;"></div>
+                    <div class="skeleton" style="height: 120px; border-radius: 1rem;"></div>
+                    <div class="skeleton" style="height: 120px; border-radius: 1rem;"></div>
+                </div>
+                <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 1.5rem;">
+                    <div class="skeleton" style="height: 400px; border-radius: 1rem; width: 100%;"></div>
+                    <div class="skeleton" style="height: 400px; border-radius: 1rem; width: 100%;"></div>
+                </div>
+            </div>
+
+            <!-- Table/CRUD Skeleton -->
+            <div class="content skeleton-wrapper" id="skeleton-table" style="display: none;">
+                <div style="display: flex; justify-content: space-between; margin-bottom: 2rem;">
+                    <div>
+                        <div class="skeleton skeleton-text" style="width: 200px; height: 32px; margin-bottom: 0.5rem;"></div>
+                        <div class="skeleton skeleton-text" style="width: 300px; height: 20px;"></div>
+                    </div>
+                    <div class="skeleton skeleton-text" style="width: 150px; height: 40px; border-radius: 0.5rem;"></div>
+                </div>
+                <div class="skeleton" style="height: 60px; border-radius: 1rem 1rem 0 0; margin-bottom: 2px;"></div>
+                <div class="skeleton" style="height: 60px; margin-bottom: 2px;"></div>
+                <div class="skeleton" style="height: 60px; margin-bottom: 2px;"></div>
+                <div class="skeleton" style="height: 60px; margin-bottom: 2px;"></div>
+                <div class="skeleton" style="height: 60px; margin-bottom: 2px;"></div>
+                <div class="skeleton" style="height: 60px; border-radius: 0 0 1rem 1rem;"></div>
+            </div>
+
+            <!-- Grid/Live Screen Skeleton -->
+            <div class="content skeleton-wrapper" id="skeleton-grid" style="display: none;">
+                <div style="display: flex; justify-content: space-between; margin-bottom: 2rem;">
+                    <div>
+                        <div class="skeleton skeleton-text" style="width: 250px; height: 32px; margin-bottom: 0.5rem;"></div>
+                        <div class="skeleton skeleton-text" style="width: 300px; height: 20px;"></div>
+                    </div>
+                </div>
+                <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1.5rem;">
+                    <div class="skeleton" style="height: 250px; border-radius: 1rem;"></div>
+                    <div class="skeleton" style="height: 250px; border-radius: 1rem;"></div>
+                    <div class="skeleton" style="height: 250px; border-radius: 1rem;"></div>
+                    <div class="skeleton" style="height: 250px; border-radius: 1rem;"></div>
+                    <div class="skeleton" style="height: 250px; border-radius: 1rem;"></div>
+                    <div class="skeleton" style="height: 250px; border-radius: 1rem;"></div>
+                </div>
+            </div>
+
+        </div>
     </div>
 
     <!-- Toast Notifications -->
