@@ -100,9 +100,7 @@
                     <tbody id="planTableBody">
                         @if ($plans->isEmpty())
                             <tr>
-                                <td colspan="6" class="empty-state-td" style="color: #6b7280;">
-                                    <i class="ph ph-folder-open"
-                                        style="font-size: 2.5rem; color: #9ca3af;"></i>
+                                <td colspan="6" class="empty-state-td" style="color: #6b7280; text-align: center; padding: 2rem;">
                                     Data tidak ditemukan
                                 </td>
                             </tr>
