@@ -1619,3 +1619,28 @@ img { max-width: 100%; display: block; }
     margin-left: 0 !important;
   }
 }
+
+/* ============================================================
+   GLOBAL MODAL FIX (CENTERING) & EMPTY STATE
+   ============================================================ */
+.modal-overlay {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+.modal-content {
+  margin: 0 !important;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.empty-state-td {
+  text-align: center !important;
+  padding: 3rem !important;
+  white-space: normal !important;
+}
+
+.empty-state-td i {
+  margin: 0 auto 0.5rem auto !important;
+}
