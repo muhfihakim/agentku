@@ -715,4 +715,43 @@ document.addEventListener('DOMContentLoaded', () => {
       });
   }
   updateDashboardStats();
+
+  // WebSocket Connection Status Badge
+  const wsBadge = document.getElementById('wsConnectionBadge');
+  if (wsBadge && window.echoInstance && window.echoInstance.connector && window.echoInstance.connector.pusher) {
+      const updateWsBadge = (state) => {
+          const dot = wsBadge.querySelector('.status-dot');
+          const text = wsBadge.querySelector('span:last-child');
+          if (state === 'connected') {
+              wsBadge.classList.remove('disconnected');
+              wsBadge.classList.add('connected');
+              dot.classList.remove('red');
+              dot.classList.add('green');
+              text.innerText = 'Server: Connected';
+          } else {
+              wsBadge.classList.remove('connected');
+              wsBadge.classList.add('disconnected');
+              dot.classList.remove('green');
+              dot.classList.add('red');
+              text.innerText = 'Server: Disconnected';
+          }
+      };
+      
+      const pusher = window.echoInstance.connector.pusher;
+      pusher.connection.bind('state_change', (states) => {
+          updateWsBadge(states.current);
+      });
+      updateWsBadge(pusher.connection.state);
+  }
+
+  // Profile Dropdown - close on click outside
+  document.addEventListener('click', function(e) {
+      const topbarAdmin = document.querySelector('.topbar-admin');
+      const profileDropdown = document.getElementById('profileDropdown');
+      if (topbarAdmin && profileDropdown) {
+          if (!topbarAdmin.contains(e.target)) {
+              profileDropdown.classList.remove('active');
+          }
+      }
+  });
 });

@@ -353,6 +353,12 @@ img { max-width: 100%; display: block; }
   border: 1px solid var(--success-100);
 }
 
+.topbar-status-badge.disconnected {
+  background: var(--danger-50);
+  color: var(--danger-600);
+  border: 1px solid var(--danger-100);
+}
+
 .topbar-status-badge.agents {
   background: var(--primary-50);
   color: var(--primary-600);
