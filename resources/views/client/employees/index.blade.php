@@ -56,6 +56,7 @@
                             <th>Nama</th>
                             <th>Departemen</th>
                             <th>Perangkat</th>
+                            <th>Token Perangkat</th>
                             <th>Sistem Operasi</th>
                             <th>Status</th>
                             <th>Aktivitas Terakhir</th>

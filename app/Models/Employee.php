@@ -13,6 +13,7 @@ class Employee extends Model
         'name',
         'email',
         'department_id',
+        'device_token',
         'device_info',
         'os_info',
         'status',

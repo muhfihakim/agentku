@@ -13,7 +13,30 @@ Route::get('/user', function (Request $request) {
 
 Route::post('/monitor', function (Request $request) {
     $data = $request->all();
-    \Illuminate\Support\Facades\Cache::put('agent_data_' . $data['user'], $data, now()->addMinutes(5));
+    $token = $request->header('Authorization') ? str_replace('Bearer ', '', $request->header('Authorization')) : ($data['token'] ?? null);
+    $tenantId = $request->header('X-Tenant') ?? ($data['tenant'] ?? null);
+    
+    if ($token && $tenantId) {
+        $tenant = \App\Models\Tenant::find($tenantId);
+        if ($tenant) {
+            tenancy()->initialize($tenant);
+            $employee = \App\Models\Employee::where('device_token', $token)->first();
+            if ($employee) {
+                $employee->update([
+                    'os_info' => $data['os'] ?? $employee->os_info,
+                    'device_info' => $data['device'] ?? $employee->device_info,
+                    'status' => 'online',
+                    'last_active_at' => now(),
+                ]);
+                // update user string based on employee
+                $data['user'] = $employee->id;
+            }
+            tenancy()->end();
+        }
+    }
+    
+    $userKey = $data['user'] ?? 'unknown';
+    \Illuminate\Support\Facades\Cache::put('agent_data_' . $userKey, $data, now()->addMinutes(5));
     
     $broadcastData = $data;
     unset($broadcastData['screen']); // Too large for WebSocket

@@ -50,6 +50,7 @@ class EmployeeController extends Controller
             'os_info' => 'nullable|string',
         ]);
 
+        $validated['device_token'] = \Illuminate\Support\Str::uuid()->toString();
         Employee::create($validated);
 
         return back()->with('success', 'Karyawan berhasil ditambahkan.');

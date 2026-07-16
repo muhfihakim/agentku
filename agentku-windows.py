@@ -240,10 +240,28 @@ def main():
             "idle_time": round(idle_seconds)
         }
 
+        # Read config if exists
+        config = {}
+        try:
+            if os.path.exists("config.json"):
+                with open("config.json", "r") as f:
+                    config = json.load(f)
+        except:
+            pass
+            
+        token = config.get("device_token", "")
+        tenant = config.get("tenant", "")
+        
+        headers = {'Content-Type': 'application/json', 'Accept': 'application/json'}
+        if token:
+            headers['Authorization'] = f'Bearer {token}'
+        if tenant:
+            headers['X-Tenant'] = tenant
+
         req = urllib.request.Request(
             url,
             data=json.dumps(data).encode('utf-8'),
-            headers={'Content-Type': 'application/json', 'Accept': 'application/json'},
+            headers=headers,
             method='POST'
         )
 
