@@ -12,14 +12,12 @@ class UserSeeder extends Seeder
      */
     public function run(): void
     {
-        $tenant = \App\Models\Tenant::firstOrCreate(['id' => 'majumundur']);
-        
         $admin = \App\Models\User::firstOrCreate([
             'email' => 'admin@majumundur.com'
         ], [
             'name' => 'Admin Maju Mundur',
             'password' => bcrypt('password123'),
-            'tenant_id' => $tenant->id,
+            'tenant_id' => 'majumundur', // just set string without creating tenant db
         ]);
 
         $admin->assignRole('Admin');
