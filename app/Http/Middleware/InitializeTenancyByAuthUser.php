@@ -11,8 +11,12 @@ class InitializeTenancyByAuthUser
     public function handle(Request $request, Closure $next): Response
     {
         $user = $request->user();
-        if ($user && $user->tenant_id) {
-            tenancy()->initialize($user->tenant_id);
+        if ($user) {
+            if ($user->tenant_id) {
+                tenancy()->initialize($user->tenant_id);
+            } elseif ($user->hasRole('Owner') && !$request->is('owner*')) {
+                return redirect()->route('owner.dashboard');
+            }
         }
 
         return $next($request);
