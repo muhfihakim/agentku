@@ -39,6 +39,16 @@
                 </span>
               </div>
             </div>
+
+            <div style="width: 1px; height: 2rem; background: #e5e7eb;"></div>
+
+            <div>
+              <span style="display: block; font-size: 0.75rem; color: #6b7280; font-weight: 600; text-transform: uppercase; margin-bottom: 0.25rem;">Tenant ID (Untuk Agen)</span>
+              <div style="display: flex; align-items: center; gap: 0.5rem;">
+                <code style="background:#f3f4f6; padding:0.25rem 0.5rem; border-radius:0.25rem; font-size:1rem; color:#4b5563; font-weight:bold;">{{ tenant('id') }}</code>
+                <button onclick="navigator.clipboard.writeText('{{ tenant('id') }}'); alert('Tenant ID dicopy!');" class="btn btn-ghost btn-sm" style="padding:0.25rem; color:#3b82f6;" title="Copy Tenant ID"><i class="ph ph-copy"></i></button>
+              </div>
+            </div>
           </div>
         </div>
 
