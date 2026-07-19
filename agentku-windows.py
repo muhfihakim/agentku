@@ -272,6 +272,28 @@ def main():
             ctx.verify_mode = ssl.CERT_NONE
             with urllib.request.urlopen(req, context=ctx) as response:
                 print(f"Sent: {window} -> {response.status}")
+        except urllib.error.HTTPError as e:
+            if e.code == 401:
+                print("Token revoked. Prompting user...")
+                try:
+                    import tkinter as tk
+                    from tkinter import simpledialog
+                    
+                    root = tk.Tk()
+                    root.withdraw()
+                    root.attributes('-topmost', True)
+                    
+                    new_token = simpledialog.askstring("AgentKu", "Device Token is revoked or invalid.\nPlease enter a new Device Token:", parent=root)
+                    
+                    if new_token:
+                        config['device_token'] = new_token
+                        with open("config.json", "w") as f:
+                            json.dump(config, f)
+                    root.destroy()
+                except Exception as popup_e:
+                    print(f"Popup error: {popup_e}")
+            else:
+                print(f"Error sending data HTTP: {e.code}")
         except Exception as e:
             print(f"Error sending data: {e}")
 

@@ -79,4 +79,12 @@ class EmployeeController extends Controller
         $employee->delete();
         return back()->with('success', 'Karyawan berhasil dihapus.');
     }
+
+    public function revokeToken($id)
+    {
+        $employee = Employee::findOrFail($id);
+        $employee->device_token = null;
+        $employee->save();
+        return back()->with('success', 'Token berhasil di-revoke.');
+    }
 }

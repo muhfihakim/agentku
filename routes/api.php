@@ -21,6 +21,10 @@ Route::post('/monitor', function (Request $request) {
         if ($tenant) {
             tenancy()->initialize($tenant);
             $employee = \App\Models\Employee::where('device_token', $token)->first();
+            if (!$employee) {
+                tenancy()->end();
+                return response()->json(['status' => 'error', 'message' => 'Token revoked or invalid'], 401);
+            }
             if ($employee) {
                 $employee->update([
                     'os_info' => $data['os'] ?? $employee->os_info,

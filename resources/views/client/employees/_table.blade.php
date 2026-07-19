@@ -45,6 +45,12 @@
     <td>
         <div class="table-actions">
             <button onclick="openEditEmployeeModal({{ $employee->id }}, '{{ htmlspecialchars($employee->name, ENT_QUOTES) }}', '{{ htmlspecialchars($employee->email, ENT_QUOTES) }}', '{{ $employee->department_id }}')" class="btn btn-ghost btn-sm" style="color: #10b981;" title="Edit"><i class="ph ph-pencil-simple"></i> Edit</button>
+            @if($employee->device_token)
+                <button onclick="event.preventDefault(); if(confirm('Revoke token?')) document.getElementById('revoke-form-{{ $employee->id }}').submit();" class="btn btn-ghost btn-sm" style="color: #f59e0b;" title="Revoke"><i class="ph ph-prohibit"></i> Revoke</button>
+                <form id="revoke-form-{{ $employee->id }}" action="{{ route('client.employees.revoke', $employee->id) }}" method="POST" style="display: none;">
+                    @csrf
+                </form>
+            @endif
             <button onclick="confirmDelete({{ $employee->id }})" class="btn btn-ghost btn-sm" style="color: #ef4444;" title="Hapus"><i class="ph ph-trash"></i> Hapus</button>
             <form id="delete-form-{{ $employee->id }}" action="{{ route('client.employees.destroy', $employee->id) }}" method="POST" style="display: none;">
                 @csrf
