@@ -84,8 +84,22 @@ class EmployeeController extends Controller
     {
         $employee = Employee::findOrFail($id);
         $employee->device_token = null;
+        $employee->status = 'offline';
         $employee->save();
-        return back()->with('success', 'Token berhasil di-revoke.');
+
+        $tenantId = tenant('id');
+        $cacheKey = 'agent_data_' . ($tenantId ? $tenantId . '_' : '') . $employee->id;
+        
+        $data = \Illuminate\Support\Facades\Cache::get($cacheKey, []);
+        $data['status'] = 'offline';
+        $data['user'] = $employee->id;
+        \Illuminate\Support\Facades\Cache::put($cacheKey, $data, now()->addMinutes(5));
+
+        $broadcastData = $data;
+        unset($broadcastData['screen']);
+        \App\Events\AgentDataReceived::dispatch($broadcastData);
+
+        return back()->with('success', 'Token berhasil di-revoke dan status diubah jadi offline.');
     }
 
     public function generateToken($id)
