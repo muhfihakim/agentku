@@ -157,10 +157,11 @@ document.addEventListener('DOMContentLoaded', () => {
   const liveSearchInput = document.getElementById('monitorSearch');
 
   const filterCards = () => {
-    if (!monitorGrid) return;
+    const currentMonitorGrid = document.getElementById('monitorGrid');
+    if (!currentMonitorGrid) return;
     const filterValue = statusFilter ? statusFilter.value : 'all';
     const searchValue = liveSearchInput ? liveSearchInput.value.toLowerCase().trim() : '';
-    const cards = monitorGrid.querySelectorAll('.screen-card');
+    const cards = currentMonitorGrid.querySelectorAll('.screen-card');
 
     cards.forEach((card) => {
       const cardStatus = card.getAttribute('data-status') || '';
@@ -236,11 +237,13 @@ document.addEventListener('DOMContentLoaded', () => {
         viewToggleBtns.forEach((b) => b.classList.remove('active'));
         btn.classList.add('active');
 
+        const currentMonitorGrid = document.getElementById('monitorGrid');
+        if (!currentMonitorGrid) return;
         const layout = btn.getAttribute('data-layout');
         if (layout === 'list') {
-          monitorGrid.classList.add('list-view');
+          currentMonitorGrid.classList.add('list-view');
         } else {
-          monitorGrid.classList.remove('list-view');
+          currentMonitorGrid.classList.remove('list-view');
         }
       });
     });
@@ -273,8 +276,9 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!data || !data.user) return;
 
         // 1. Dashboard (Live Screens) updates
-        if (monitorGrid) {
-          let card = monitorGrid.querySelector(`.screen-card[data-user="${data.user}"]`);
+        const currentMonitorGrid = document.getElementById('monitorGrid');
+        if (currentMonitorGrid) {
+          let card = currentMonitorGrid.querySelector(`.screen-card[data-user="${data.user}"]`);
           if (!card) {
             card = document.createElement("div");
             card.className = "screen-card";
@@ -292,7 +296,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 <a href="/monitor/${encodeURIComponent(data.user)}" class="btn btn-sm btn-primary view-detail-btn">View Detail</a>
               </div>
             `;
-            monitorGrid.appendChild(card);
+            currentMonitorGrid.appendChild(card);
           }
           
           card.setAttribute("data-status", data.status);
@@ -512,8 +516,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
   /** Count statuses across cards and update the dashboard stat widgets. */
   const updateDashboardStats = () => {
-    if (!monitorGrid) return;
-    const cards = monitorGrid.querySelectorAll('.screen-card');
+    const currentMonitorGrid = document.getElementById('monitorGrid');
+    if (!currentMonitorGrid) return;
+    const cards = currentMonitorGrid.querySelectorAll('.screen-card');
     let online = 0;
     let idle = 0;
     let offline = 0;
