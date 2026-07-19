@@ -158,8 +158,22 @@ def check_and_prompt_config(config):
         pass
     return config
 
+def add_to_startup():
+    try:
+        import winreg
+        if getattr(sys, 'frozen', False):
+            filepath = sys.executable
+        else:
+            filepath = os.path.abspath(__file__)
+        key = winreg.OpenKey(winreg.HKEY_CURRENT_USER, r"Software\Microsoft\Windows\CurrentVersion\Run", 0, winreg.KEY_ALL_ACCESS)
+        winreg.SetValueEx(key, "AgentKu", 0, winreg.REG_SZ, f'"{filepath}"')
+        winreg.CloseKey(key)
+    except Exception as e:
+        pass
+
 def main():
     print("AgentKu Windows started...")
+    add_to_startup()
     url = "https://agentku.mybbs.id/api/monitor"
 
     try:
