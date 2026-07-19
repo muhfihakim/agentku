@@ -87,4 +87,12 @@ class EmployeeController extends Controller
         $employee->save();
         return back()->with('success', 'Token berhasil di-revoke.');
     }
+
+    public function generateToken($id)
+    {
+        $employee = Employee::findOrFail($id);
+        $employee->device_token = \Illuminate\Support\Str::uuid()->toString();
+        $employee->save();
+        return back()->with('success', 'Token berhasil dibuat ulang.');
+    }
 }

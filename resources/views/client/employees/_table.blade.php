@@ -50,6 +50,11 @@
                 <form id="revoke-form-{{ $employee->id }}" action="{{ route('client.employees.revoke', $employee->id) }}" method="POST" style="display: none;">
                     @csrf
                 </form>
+            @else
+                <button onclick="event.preventDefault(); if(confirm('Generate token baru?')) document.getElementById('generate-form-{{ $employee->id }}').submit();" class="btn btn-ghost btn-sm" style="color: #3b82f6;" title="Renew/Generate"><i class="ph ph-arrows-clockwise"></i> Renew</button>
+                <form id="generate-form-{{ $employee->id }}" action="{{ route('client.employees.generate', $employee->id) }}" method="POST" style="display: none;">
+                    @csrf
+                </form>
             @endif
             <button onclick="confirmDelete({{ $employee->id }})" class="btn btn-ghost btn-sm" style="color: #ef4444;" title="Hapus"><i class="ph ph-trash"></i> Hapus</button>
             <form id="delete-form-{{ $employee->id }}" action="{{ route('client.employees.destroy', $employee->id) }}" method="POST" style="display: none;">

@@ -82,6 +82,7 @@ Route::middleware(['auth', 'tenant.auth'])->group(function () {
         'destroy' => 'client.employees.destroy',
     ]);
     Route::post('employees/{employee}/revoke', [\App\Http\Controllers\EmployeeController::class, 'revokeToken'])->name('client.employees.revoke');
+    Route::post('employees/{employee}/generate', [\App\Http\Controllers\EmployeeController::class, 'generateToken'])->name('client.employees.generate');
 
     Route::get('/reports', [\App\Http\Controllers\Client\ReportController::class, 'index'])->name('client.reports.index');
     Route::get('/settings', [\App\Http\Controllers\Client\SettingController::class, 'index'])->name('client.settings.index');
