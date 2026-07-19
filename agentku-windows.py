@@ -134,6 +134,30 @@ def get_location():
     loc_cache["last_update"] = time.time()
     return loc_cache["lat"], loc_cache["lng"], loc_cache["city"]
 
+def check_and_prompt_config(config):
+    tenant = config.get("tenant", "")
+    token = config.get("device_token", "")
+    if tenant and token:
+        return config
+    try:
+        import tkinter as tk
+        from tkinter import simpledialog
+        root = tk.Tk()
+        root.withdraw()
+        root.attributes('-topmost', True)
+        if not tenant:
+            t = simpledialog.askstring("AgentKu Setup", "Masukkan Tenant ID:", parent=root)
+            if t: config['tenant'] = t
+        if not token:
+            t = simpledialog.askstring("AgentKu Setup", "Masukkan Device Token (UUID):", parent=root)
+            if t: config['device_token'] = t
+        with open("config.json", "w") as f:
+            json.dump(config, f)
+        root.destroy()
+    except Exception as e:
+        pass
+    return config
+
 def main():
     print("AgentKu Windows started...")
     url = "https://agentku.mybbs.id/api/monitor"
@@ -249,8 +273,13 @@ def main():
         except:
             pass
             
+        config = check_and_prompt_config(config)
         token = config.get("device_token", "")
         tenant = config.get("tenant", "")
+        
+        if not token or not tenant:
+            time.sleep(5)
+            continue
         
         headers = {'Content-Type': 'application/json', 'Accept': 'application/json'}
         if token:
