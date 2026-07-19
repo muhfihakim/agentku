@@ -357,7 +357,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const detailViewer = document.querySelector('.detail-screen-viewer');
         if (detailViewer) {
           const detailName = document.querySelector('.detail-employee-name');
-          if (detailName && detailName.textContent === data.user) {
+          if (detailName && detailName.textContent.trim() == data.user) {
             try {
               const res = await fetch("/api/monitor?user=" + encodeURIComponent(data.user));
               const fullData = await res.json();
