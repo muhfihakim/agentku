@@ -40,19 +40,12 @@ Route::post('/monitor', function (Request $request) {
     }
     
     $userKey = $data['user'] ?? 'unknown';
-    \Illuminate\Support\Facades\Cache::put('agent_data_' . $userKey, $data, now()->addMinutes(5));
+    $cacheKey = 'agent_data_' . ($tenantId ? $tenantId . '_' : '') . $userKey;
+    \Illuminate\Support\Facades\Cache::put($cacheKey, $data, now()->addMinutes(5));
     
     $broadcastData = $data;
     unset($broadcastData['screen']); // Too large for WebSocket
     
     \App\Events\AgentDataReceived::dispatch($broadcastData);
     return response()->json(['status' => 'ok']);
-});
-
-Route::get('/monitor', function (Request $request) {
-    $user = $request->query('user');
-    if ($user) {
-        return response()->json(\Illuminate\Support\Facades\Cache::get('agent_data_' . $user, []));
-    }
-    return response()->json(\Illuminate\Support\Facades\Cache::get('agent_data', []));
 });

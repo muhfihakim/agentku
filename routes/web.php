@@ -42,7 +42,9 @@ Route::middleware(['auth', 'tenant.auth'])->group(function () {
     })->name('dashboard');
 
     Route::get('/monitor/{user}', function ($user) {
-        $data = \Illuminate\Support\Facades\Cache::get('agent_data_' . $user, [
+        $tenantId = tenant('id');
+        $cacheKey = 'agent_data_' . ($tenantId ? $tenantId . '_' : '') . $user;
+        $data = \Illuminate\Support\Facades\Cache::get($cacheKey, [
             'user' => $user,
             'status' => 'offline',
             'window' => 'Unknown',
@@ -50,6 +52,16 @@ Route::middleware(['auth', 'tenant.auth'])->group(function () {
             'screen' => ''
         ]);
         return view('client.detail', ['data' => $data]);
+    });
+
+    Route::get('/api/monitor', function (Illuminate\Http\Request $request) {
+        $user = $request->query('user');
+        $tenantId = tenant('id');
+        if ($user) {
+            $cacheKey = 'agent_data_' . ($tenantId ? $tenantId . '_' : '') . $user;
+            return response()->json(\Illuminate\Support\Facades\Cache::get($cacheKey, []));
+        }
+        return response()->json([]);
     });
 
     Route::get('/live', function () {
