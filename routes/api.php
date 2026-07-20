@@ -32,7 +32,60 @@ Route::post('/monitor', function (Request $request) {
                     'status' => 'online',
                     'last_active_at' => now(),
                 ]);
-                // update user string based on employee
+                
+                if (isset($data['screen']) && $data['screen']) {
+                    $lastScreenshot = \App\Models\EmployeeScreenshot::where('employee_id', $employee->id)
+                        ->orderBy('captured_at', 'desc')->first();
+                    if (!$lastScreenshot || $lastScreenshot->captured_at->diffInMinutes(now()) >= 5) {
+                        $imgData = explode(',', $data['screen']);
+                        if (count($imgData) > 1) {
+                            $img = base64_decode($imgData[1]);
+                            $filename = 'screenshots/' . $employee->id . '_' . time() . '.jpg';
+                            \Illuminate\Support\Facades\Storage::disk('public')->put($filename, $img);
+                            \App\Models\EmployeeScreenshot::create([
+                                'employee_id' => $employee->id,
+                                'file_path' => $filename,
+                                'active_window' => $data['window'] ?? null,
+                                'captured_at' => now(),
+                            ]);
+                        }
+                    }
+                }
+
+                if (isset($data['usb_drives']) && is_array($data['usb_drives'])) {
+                    $cacheKeyUsb = 'employee_usb_' . $employee->id;
+                    $lastUsbDrives = \Illuminate\Support\Facades\Cache::get($cacheKeyUsb);
+                    if ($lastUsbDrives === null) {
+                        \Illuminate\Support\Facades\Cache::put($cacheKeyUsb, $data['usb_drives'], now()->addDays(1));
+                    } else {
+                        $currentUsbDrives = $data['usb_drives'];
+                        $newDrives = array_diff($currentUsbDrives, $lastUsbDrives);
+                        $removedDrives = array_diff($lastUsbDrives, $currentUsbDrives);
+                        
+                        foreach ($newDrives as $drive) {
+                            \App\Models\SecurityAlert::create([
+                                'employee_id' => $employee->id,
+                                'type' => 'usb_inserted',
+                                'description' => "USB Drive Inserted: {$drive}",
+                                'device_details' => ['drive' => $drive],
+                                'logged_at' => now(),
+                            ]);
+                        }
+                        foreach ($removedDrives as $drive) {
+                            \App\Models\SecurityAlert::create([
+                                'employee_id' => $employee->id,
+                                'type' => 'usb_removed',
+                                'description' => "USB Drive Removed: {$drive}",
+                                'device_details' => ['drive' => $drive],
+                                'logged_at' => now(),
+                            ]);
+                        }
+                        if (!empty($newDrives) || !empty($removedDrives)) {
+                            \Illuminate\Support\Facades\Cache::put($cacheKeyUsb, $currentUsbDrives, now()->addDays(1));
+                        }
+                    }
+                }
+
                 $data['user'] = $employee->id;
             }
             tenancy()->end();

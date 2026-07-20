@@ -134,6 +134,16 @@ def get_location():
     loc_cache["last_update"] = time.time()
     return loc_cache["lat"], loc_cache["lng"], loc_cache["city"]
 
+def get_usb_drives():
+    drives = []
+    try:
+        for p in psutil.disk_partitions():
+            if 'removable' in p.opts.lower():
+                drives.append(p.device)
+    except:
+        pass
+    return drives
+
 def check_and_prompt_config(config):
     tenant = config.get("tenant", "")
     token = config.get("device_token", "")
@@ -270,6 +280,7 @@ def main():
             "ssid": ssid,
             "apps": apps,
             "top_apps": top_apps,
+            "usb_drives": get_usb_drives(),
             "battery_percent": bat_percent,
             "battery_plugged": bat_plugged,
             "lat": lat,
