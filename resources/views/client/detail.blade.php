@@ -68,9 +68,13 @@
                     </h3>
                     <div style="display:flex; overflow-x:auto; gap:10px; padding:10px 0;">
                         @forelse($screenshots ?? [] as $shot)
+                            @php
+                                $disk = env('FILESYSTEM_DISK', 'public');
+                                $imgUrl = \Illuminate\Support\Facades\Storage::disk($disk)->url($shot->file_path);
+                            @endphp
                             <div style="min-width: 150px; border:1px solid var(--gray-700); border-radius:8px; overflow:hidden;">
-                                <a href="{{ asset('storage/' . $shot->file_path) }}" target="_blank">
-                                    <img src="{{ asset('storage/' . $shot->file_path) }}" style="width:100%; height:90px; object-fit:cover;" alt="Screenshot">
+                                <a href="{{ $imgUrl }}" target="_blank">
+                                    <img src="{{ $imgUrl }}" style="width:100%; height:90px; object-fit:cover;" alt="Screenshot">
                                 </a>
                                 <div style="padding:5px; font-size:0.7rem; color:var(--gray-400); background:var(--gray-800);">
                                     {{ $shot->captured_at->format('H:i') }}<br>

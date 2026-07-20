@@ -41,7 +41,8 @@ Route::post('/monitor', function (Request $request) {
                         if (count($imgData) > 1) {
                             $img = base64_decode($imgData[1]);
                             $filename = 'screenshots/' . $employee->id . '_' . time() . '.jpg';
-                            \Illuminate\Support\Facades\Storage::disk('public')->put($filename, $img);
+                            $disk = env('FILESYSTEM_DISK', 'public');
+                            \Illuminate\Support\Facades\Storage::disk($disk)->put($filename, $img);
                             \App\Models\EmployeeScreenshot::create([
                                 'employee_id' => $employee->id,
                                 'file_path' => $filename,
