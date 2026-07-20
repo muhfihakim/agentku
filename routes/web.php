@@ -51,7 +51,11 @@ Route::middleware(['auth', 'tenant.auth'])->group(function () {
             'device' => 'Unknown',
             'screen' => ''
         ]);
-        return view('client.detail', ['data' => $data]);
+        $screenshots = \App\Models\EmployeeScreenshot::where('employee_id', $user)
+                            ->orderBy('captured_at', 'desc')->take(20)->get();
+        $alerts = \App\Models\SecurityAlert::where('employee_id', $user)
+                            ->orderBy('logged_at', 'desc')->take(10)->get();
+        return view('client.detail', ['data' => $data, 'screenshots' => $screenshots, 'alerts' => $alerts]);
     });
 
     Route::get('/api/monitor', function (Illuminate\Http\Request $request) {

@@ -60,6 +60,54 @@
                             </span>
                         </div>
                     </div>
+                <!-- Historical Screenshots -->
+                <div class="detail-card" style="margin-top: 20px;">
+                    <h3 class="detail-card-title">
+                        <i class="ph ph-images"></i>
+                        Riwayat Tangkapan Layar
+                    </h3>
+                    <div style="display:flex; overflow-x:auto; gap:10px; padding:10px 0;">
+                        @forelse($screenshots ?? [] as $shot)
+                            <div style="min-width: 150px; border:1px solid var(--gray-700); border-radius:8px; overflow:hidden;">
+                                <a href="{{ asset('storage/' . $shot->file_path) }}" target="_blank">
+                                    <img src="{{ asset('storage/' . $shot->file_path) }}" style="width:100%; height:90px; object-fit:cover;" alt="Screenshot">
+                                </a>
+                                <div style="padding:5px; font-size:0.7rem; color:var(--gray-400); background:var(--gray-800);">
+                                    {{ $shot->captured_at->format('H:i') }}<br>
+                                    <span style="white-space:nowrap; overflow:hidden; text-overflow:ellipsis; display:block;" title="{{ $shot->active_window }}">
+                                        {{ $shot->active_window ?? 'Unknown' }}
+                                    </span>
+                                </div>
+                            </div>
+                        @empty
+                            <p style="color:var(--gray-500); font-size:0.8rem;">Belum ada riwayat tangkapan layar.</p>
+                        @endforelse
+                    </div>
+                </div>
+
+                <!-- Security Alerts -->
+                <div class="detail-card" style="margin-top: 20px;">
+                    <h3 class="detail-card-title" style="color: #ef4444;">
+                        <i class="ph ph-shield-warning"></i>
+                        Peringatan Keamanan & USB
+                    </h3>
+                    <div class="detail-card-grid" style="max-height: 200px; overflow-y: auto;">
+                        @forelse($alerts ?? [] as $alert)
+                            <div class="detail-info-row">
+                                <span class="detail-info-label" style="display:flex; align-items:center; gap:8px;">
+                                    @if(str_contains($alert->type, 'inserted'))
+                                        <i class="ph ph-usb" style="color:#ef4444;"></i>
+                                    @else
+                                        <i class="ph ph-usb" style="color:#10b981;"></i>
+                                    @endif
+                                    {{ $alert->description }}
+                                </span>
+                                <span class="detail-info-value" style="font-size:0.75rem;">{{ $alert->logged_at->diffForHumans() }}</span>
+                            </div>
+                        @empty
+                            <p style="color:var(--gray-500); font-size:0.8rem; padding: 10px;">Tidak ada peringatan.</p>
+                        @endforelse
+                    </div>
                 </div>
             </div>
 
