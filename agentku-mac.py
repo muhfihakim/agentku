@@ -8,8 +8,12 @@ import socket
 import subprocess
 from io import BytesIO
 
-import tkinter as tk
-from tkinter import simpledialog
+try:
+    import tkinter as tk
+    from tkinter import simpledialog
+    HAS_TKINTER = True
+except ImportError:
+    HAS_TKINTER = False
 
 def get_active_window():
     script = """
@@ -126,19 +130,26 @@ def check_and_prompt_config(config):
     if tenant and token:
         return config
     try:
-        root = tk.Tk()
-        root.withdraw()
-        # Bring to front on Mac
-        os.system('''/usr/bin/osascript -e 'tell app "Finder" to set frontmost of process "Python" to true' ''')
-        if not tenant:
-            t = simpledialog.askstring("AgentKu Setup", "Masukkan Tenant ID:", parent=root)
-            if t: config['tenant'] = t
-        if not token:
-            t = simpledialog.askstring("AgentKu Setup", "Masukkan Device Token (UUID):", parent=root)
-            if t: config['device_token'] = t
+        if HAS_TKINTER:
+            root = tk.Tk()
+            root.withdraw()
+            # Bring to front on Mac
+            os.system('''/usr/bin/osascript -e 'tell app "Finder" to set frontmost of process "Python" to true' ''')
+            if not tenant:
+                t = simpledialog.askstring("AgentKu Setup", "Masukkan Tenant ID:", parent=root)
+                if t: config['tenant'] = t
+            if not token:
+                t = simpledialog.askstring("AgentKu Setup", "Masukkan Device Token (UUID):", parent=root)
+                if t: config['device_token'] = t
+            root.destroy()
+        else:
+            if not tenant:
+                config['tenant'] = input("AgentKu Setup - Masukkan Tenant ID: ").strip()
+            if not token:
+                config['device_token'] = input("AgentKu Setup - Masukkan Device Token (UUID): ").strip()
+                
         with open("config.json", "w") as f:
             json.dump(config, f)
-        root.destroy()
     except Exception as e:
         pass
     return config
