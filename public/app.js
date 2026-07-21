@@ -41,9 +41,21 @@ document.addEventListener('DOMContentLoaded', () => {
 
     async function navigateTo(url, push = true) {
       // Update sidebar active states immediately
+      const currentPath = url.split('?')[0];
       document.querySelectorAll('.sidebar-nav-item').forEach(el => {
         el.classList.remove('active');
-        if (el.getAttribute('href') === url) el.classList.add('active');
+        const href = el.getAttribute('href');
+        if (!href || href === '#') return;
+        try {
+            const elUrl = new URL(href, window.location.origin);
+            const navPath = elUrl.pathname;
+            
+            if (navPath === '/' || navPath === '/owner') {
+                if (currentPath === navPath) el.classList.add('active');
+            } else {
+                if (currentPath.startsWith(navPath)) el.classList.add('active');
+            }
+        } catch (e) {}
       });
 
       // Determine Skeleton Type
@@ -559,51 +571,14 @@ document.addEventListener('DOMContentLoaded', () => {
   simulateStatusUpdates();
 
   // ──────────────────────────────────────────────
-  // 9. NOTIFICATION BELL
+  // 9. NOTIFICATION BELL (Handled in Blade now)
   // ──────────────────────────────────────────────
   const notifBell = document.querySelector('.topbar-notification');
-  let notifDropdown = null;
-
   if (notifBell) {
-    notifDropdown = document.createElement('div');
-    notifDropdown.className = 'notification-dropdown';
-    notifDropdown.innerHTML = `
-      <div class="notif-header">Notifications</div>
-      <ul class="notif-list">
-        <li class="notif-item">
-          <span class="notif-dot" style="background:#EF4444;"></span>
-          <div class="notif-content">
-            <p class="notif-text">Eko Prasetyo went offline</p>
-            <span class="notif-time">2 hours ago</span>
-          </div>
-        </li>
-        <li class="notif-item">
-          <span class="notif-dot" style="background:#3B82F6;"></span>
-          <div class="notif-content">
-            <p class="notif-text">New device registered: Jasmine's Android</p>
-            <span class="notif-time">3 hours ago</span>
-          </div>
-        </li>
-        <li class="notif-item">
-          <span class="notif-dot" style="background:#10B981;"></span>
-          <div class="notif-content">
-            <p class="notif-text">System update available v2.2.0</p>
-            <span class="notif-time">5 hours ago</span>
-          </div>
-        </li>
-      </ul>
-    `;
-    notifBell.style.position = 'relative';
-    notifBell.appendChild(notifDropdown);
-
-    notifBell.addEventListener('click', (e) => {
-      e.stopPropagation();
-      notifDropdown.classList.toggle('show');
-    });
-
     document.addEventListener('click', (e) => {
-      if (!notifBell.contains(e.target)) {
-        notifDropdown.classList.remove('show');
+      const dropdown = document.getElementById('notifDropdown');
+      if (dropdown && !notifBell.contains(e.target) && !dropdown.contains(e.target)) {
+        dropdown.classList.remove('active');
       }
     });
   }

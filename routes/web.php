@@ -8,6 +8,8 @@ use App\Http\Controllers\PlanController;
 
 Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
 Route::post('/login', [AuthController::class, 'login']);
+Route::get('/register', [AuthController::class, 'showRegister'])->name('register');
+Route::post('/register', [AuthController::class, 'register']);
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
 Route::middleware(['auth', 'role:Owner'])->group(function () {
@@ -41,55 +43,59 @@ Route::middleware(['auth', 'tenant.auth'])->group(function () {
         return view('client.dashboard', compact('plan', 'tenant', 'totalEmployees', 'onlineEmployees', 'idleEmployees', 'offlineEmployees', 'recentEmployees'));
     })->name('dashboard');
 
-    Route::get('/monitor/{user}', function ($user) {
-        $tenantId = tenant('id');
-        $cacheKey = 'agent_data_' . ($tenantId ? $tenantId . '_' : '') . $user;
-        $data = \Illuminate\Support\Facades\Cache::get($cacheKey, [
-            'user' => $user,
-            'status' => 'offline',
-            'window' => 'Unknown',
-            'device' => 'Unknown',
-            'screen' => ''
-        ]);
-        $screenshots = \App\Models\EmployeeScreenshot::where('employee_id', $user)
-                            ->orderBy('captured_at', 'desc')->take(20)->get();
-        $alerts = \App\Models\SecurityAlert::where('employee_id', $user)
-                            ->orderBy('logged_at', 'desc')->take(10)->get();
-        return view('client.detail', ['data' => $data, 'screenshots' => $screenshots, 'alerts' => $alerts]);
-    });
-
-    Route::get('/api/monitor', function (Illuminate\Http\Request $request) {
-        $user = $request->query('user');
-        $tenantId = tenant('id');
-        if ($user) {
-            $cacheKey = 'agent_data_' . ($tenantId ? $tenantId . '_' : '') . $user;
-            return response()->json(\Illuminate\Support\Facades\Cache::get($cacheKey, []));
-        }
-        return response()->json([]);
-    });
-
-    Route::get('/live', function () {
-        return view('client.live');
-    })->name('client.live');
-
-    Route::resource('departments', \App\Http\Controllers\DepartmentController::class)->names([
-        'index' => 'client.departments.index',
-        'store' => 'client.departments.store',
-        'update' => 'client.departments.update',
-        'destroy' => 'client.departments.destroy',
-    ]);
-    
-    Route::resource('employees', \App\Http\Controllers\EmployeeController::class)->names([
-        'index' => 'client.employees.index',
-        'store' => 'client.employees.store',
-        'update' => 'client.employees.update',
-        'destroy' => 'client.employees.destroy',
-    ]);
-    Route::post('employees/{employee}/revoke', [\App\Http\Controllers\EmployeeController::class, 'revokeToken'])->name('client.employees.revoke');
-    Route::post('employees/{employee}/generate', [\App\Http\Controllers\EmployeeController::class, 'generateToken'])->name('client.employees.generate');
-
-    Route::get('/reports', [\App\Http\Controllers\Client\ReportController::class, 'index'])->name('client.reports.index');
     Route::get('/settings', [\App\Http\Controllers\Client\SettingController::class, 'index'])->name('client.settings.index');
     Route::put('/settings/profile', [\App\Http\Controllers\Client\SettingController::class, 'updateProfile'])->name('client.settings.profile');
     Route::put('/settings/password', [\App\Http\Controllers\Client\SettingController::class, 'updatePassword'])->name('client.settings.password');
+
+    // Restricted Routes (Require Active Plan)
+    Route::middleware(['plan.active'])->group(function () {
+        Route::get('/monitor/{user}', function ($user) {
+            $tenantId = tenant('id');
+            $cacheKey = 'agent_data_' . ($tenantId ? $tenantId . '_' : '') . $user;
+            $data = \Illuminate\Support\Facades\Cache::get($cacheKey, [
+                'user' => $user,
+                'status' => 'offline',
+                'window' => 'Unknown',
+                'device' => 'Unknown',
+                'screen' => ''
+            ]);
+            $screenshots = \App\Models\EmployeeScreenshot::where('employee_id', $user)
+                                ->orderBy('captured_at', 'desc')->take(20)->get();
+            $alerts = \App\Models\SecurityAlert::where('employee_id', $user)
+                                ->orderBy('logged_at', 'desc')->take(10)->get();
+            return view('client.detail', ['data' => $data, 'screenshots' => $screenshots, 'alerts' => $alerts]);
+        });
+
+        Route::get('/api/monitor', function (Illuminate\Http\Request $request) {
+            $user = $request->query('user');
+            $tenantId = tenant('id');
+            if ($user) {
+                $cacheKey = 'agent_data_' . ($tenantId ? $tenantId . '_' : '') . $user;
+                return response()->json(\Illuminate\Support\Facades\Cache::get($cacheKey, []));
+            }
+            return response()->json([]);
+        });
+
+        Route::get('/live', function () {
+            return view('client.live');
+        })->name('client.live');
+
+        Route::resource('departments', \App\Http\Controllers\DepartmentController::class)->names([
+            'index' => 'client.departments.index',
+            'store' => 'client.departments.store',
+            'update' => 'client.departments.update',
+            'destroy' => 'client.departments.destroy',
+        ]);
+        
+        Route::resource('employees', \App\Http\Controllers\EmployeeController::class)->names([
+            'index' => 'client.employees.index',
+            'store' => 'client.employees.store',
+            'update' => 'client.employees.update',
+            'destroy' => 'client.employees.destroy',
+        ]);
+        Route::post('employees/{employee}/revoke', [\App\Http\Controllers\EmployeeController::class, 'revokeToken'])->name('client.employees.revoke');
+        Route::post('employees/{employee}/generate', [\App\Http\Controllers\EmployeeController::class, 'generateToken'])->name('client.employees.generate');
+
+        Route::get('/reports', [\App\Http\Controllers\Client\ReportController::class, 'index'])->name('client.reports.index');
+    });
 });

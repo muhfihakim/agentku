@@ -11,18 +11,37 @@ class SettingController extends Controller
 {
     public function index()
     {
-        return view('client.settings.index', ['user' => auth()->user()]);
+        $tenant = tenant();
+        $plans = \App\Models\Plan::where('status', 'aktif')->get();
+        $currentPlan = $tenant && $tenant->plan_id ? \App\Models\Plan::find($tenant->plan_id) : null;
+        
+        return view('client.settings.index', [
+            'user' => auth()->user(), 
+            'tenant' => $tenant,
+            'plans' => $plans,
+            'currentPlan' => $currentPlan
+        ]);
     }
 
     public function updateProfile(Request $request)
     {
         $request->validate([
             'name' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:users,email,' . auth()->id(),
+            'email' => ['required', 'string', 'email', 'max:255', \Illuminate\Validation\Rule::unique('App\Models\User', 'email')->ignore(auth()->id())],
+            'company' => 'required|string|max:255',
         ]);
 
         auth()->user()->update($request->only('name', 'email'));
-        return back()->with('success', 'Profil berhasil diperbarui!');
+        
+        $tenant = tenant();
+        if ($tenant) {
+            $tenant->company = $request->company;
+            $tenant->save();
+        }
+
+        activity()->log('Memperbarui profil dan data perusahaan');
+
+        return back()->with('success', 'Profil dan perusahaan berhasil diperbarui!');
     }
 
     public function updatePassword(Request $request)
@@ -33,6 +52,7 @@ class SettingController extends Controller
         ]);
 
         auth()->user()->update(['password' => Hash::make($request->password)]);
+        activity()->log('Memperbarui kata sandi akun');
         return back()->with('success', 'Kata sandi berhasil diperbarui!');
     }
 }

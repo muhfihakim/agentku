@@ -2,7 +2,7 @@
     <section class="view view-detail">
         <a href="{{ url('/') }}" class="btn btn-ghost back-btn" id="backToLive">
             <i class="ph ph-arrow-left"></i>
-            <span>Kembali ke Layar Langsung</span>
+            <span>Kembali ke Monitoring</span>
         </a>
 
         <div class="detail-layout">

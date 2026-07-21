@@ -114,15 +114,15 @@
             @if(auth()->check() && auth()->user()->hasRole('Owner'))
             <div class="sidebar-nav-section">
                 <span class="sidebar-nav-label">SAAS MANAGEMENT</span>
-                <a href="{{ route('owner.dashboard') }}" class="sidebar-nav-item {{ request()->routeIs('owner.dashboard') ? 'active' : '' }}">
+                <a href="{{ route('owner.dashboard') }}" class="sidebar-nav-item {{ request()->is('owner') ? 'active' : '' }}">
                     <i class="ph ph-buildings"></i>
                     <span>Daftar Client</span>
                 </a>
-                <a href="{{ route('owner.billing') }}" class="sidebar-nav-item {{ request()->routeIs('owner.billing') ? 'active' : '' }}">
+                <a href="{{ route('owner.billing') }}" class="sidebar-nav-item {{ request()->is('owner/billing') ? 'active' : '' }}">
                     <i class="ph ph-currency-circle-dollar"></i>
                     <span>Billing & Paket</span>
                 </a>
-                <a href="{{ route('owner.settings') }}" class="sidebar-nav-item {{ request()->routeIs('owner.settings') ? 'active' : '' }}">
+                <a href="{{ route('owner.settings') }}" class="sidebar-nav-item {{ request()->is('owner/settings') ? 'active' : '' }}">
                     <i class="ph ph-gear"></i>
                     <span>Pengaturan Global</span>
                 </a>
@@ -130,35 +130,41 @@
             @else
             <div class="sidebar-nav-section">
                 <span class="sidebar-nav-label">MAIN</span>
-                <a href="{{ route('dashboard') }}" class="sidebar-nav-item {{ request()->routeIs('dashboard') ? 'active' : '' }}">
+                <a href="{{ route('dashboard') }}" class="sidebar-nav-item {{ request()->is('/') ? 'active' : '' }}">
                     <i class="ph ph-squares-four"></i>
                     <span>Dasbor</span>
                 </a>
-                <a href="{{ route('client.live') }}" class="sidebar-nav-item {{ request()->routeIs('client.live') ? 'active' : '' }}">
+                @if(!tenant()->plan_ends_at || now()->lessThanOrEqualTo(\Carbon\Carbon::parse(tenant()->plan_ends_at)))
+                <a href="{{ route('client.live') }}" class="sidebar-nav-item {{ request()->is('live') ? 'active' : '' }}">
                     <i class="ph ph-monitor"></i>
-                    <span>Layar Langsung</span>
+                    <span>Monitoring</span>
                 </a>
+                @endif
             </div>
 
+            @if(!tenant()->plan_ends_at || now()->lessThanOrEqualTo(\Carbon\Carbon::parse(tenant()->plan_ends_at)))
             <div class="sidebar-nav-section">
                 <span class="sidebar-nav-label">MANAGEMENT</span>
-                <a href="{{ route('client.employees.index') }}" class="sidebar-nav-item {{ request()->routeIs('client.employees.index') ? 'active' : '' }}">
+                <a href="{{ route('client.employees.index') }}" class="sidebar-nav-item {{ request()->is('employees*') ? 'active' : '' }}">
                     <i class="ph ph-users"></i>
                     <span>Karyawan</span>
                 </a>
-                <a href="{{ route('client.departments.index') }}" class="sidebar-nav-item {{ request()->routeIs('client.departments.index') ? 'active' : '' }}">
+                <a href="{{ route('client.departments.index') }}" class="sidebar-nav-item {{ request()->is('departments*') ? 'active' : '' }}">
                     <i class="ph ph-buildings"></i>
                     <span>Departemen</span>
                 </a>
             </div>
+            @endif
 
             <div class="sidebar-nav-section">
                 <span class="sidebar-nav-label">SYSTEM</span>
-                <a href="{{ route('client.reports.index') }}" class="sidebar-nav-item {{ request()->routeIs('client.reports.index') ? 'active' : '' }}">
+                @if(!tenant()->plan_ends_at || now()->lessThanOrEqualTo(\Carbon\Carbon::parse(tenant()->plan_ends_at)))
+                <a href="{{ route('client.reports.index') }}" class="sidebar-nav-item {{ request()->is('reports*') ? 'active' : '' }}">
                     <i class="ph ph-chart-bar"></i>
                     <span>Laporan</span>
                 </a>
-                <a href="{{ route('client.settings.index') }}" class="sidebar-nav-item {{ request()->routeIs('client.settings.index') ? 'active' : '' }}">
+                @endif
+                <a href="{{ route('client.settings.index') }}" class="sidebar-nav-item {{ request()->is('settings*') ? 'active' : '' }}">
                     <i class="ph ph-gear"></i>
                     <span>Pengaturan</span>
                 </a>
@@ -222,10 +228,39 @@
                 <div class="topbar-status-badge agents">
                     <span>Agents: {{ $onlineAgents }}/{{ $totalAgents }} Online</span>
                 </div>
-                <button class="topbar-notification" aria-label="Notifications">
-                    <i class="ph ph-bell"></i>
-                    <span class="notification-count">3</span>
-                </button>
+                <div style="position: relative;">
+                    @php
+                        $activities = collect();
+                        try {
+                            $activities = \Spatie\Activitylog\Models\Activity::latest()->take(5)->get();
+                        } catch(\Exception $e) {}
+                    @endphp
+                    <button class="topbar-notification" aria-label="Notifications" onclick="document.getElementById('notifDropdown').classList.toggle('active')">
+                        <i class="ph ph-bell"></i>
+                        @if($activities->count() > 0)
+                        <span class="notification-count">{{ $activities->count() }}</span>
+                        @endif
+                    </button>
+                    
+                    <!-- Notif Dropdown -->
+                    <div id="notifDropdown" class="profile-dropdown" style="right: 0; min-width: 320px;">
+                        <div class="dropdown-header" style="padding: 1rem; border-bottom: 1px solid #e5e7eb; font-weight: 600;">
+                            Aktivitas Terbaru
+                        </div>
+                        <div style="max-height: 300px; overflow-y: auto; text-align: left;">
+                            @forelse($activities as $activity)
+                            <div class="dropdown-item" style="padding: 0.75rem 1rem; border-bottom: 1px solid #f3f4f6; display: flex; flex-direction: column; gap: 0.25rem; align-items: flex-start;">
+                                <span style="font-size: 0.875rem; color: #374151;">{{ $activity->description }}</span>
+                                <span style="font-size: 0.75rem; color: #9ca3af;">{{ $activity->created_at->diffForHumans() }}</span>
+                            </div>
+                            @empty
+                            <div class="dropdown-item" style="padding: 1rem; text-align: center; color: #9ca3af; font-size: 0.875rem; justify-content: center;">
+                                Belum ada aktivitas
+                            </div>
+                            @endforelse
+                        </div>
+                    </div>
+                </div>
                 <div class="topbar-divider"></div>
                 <div class="topbar-admin" style="position: relative; cursor: pointer;" onclick="document.getElementById('profileDropdown').classList.toggle('active')">
                     <div class="topbar-avatar">{{ auth()->check() ? strtoupper(substr(auth()->user()->name, 0, 2)) : 'US' }}</div>

@@ -41,6 +41,7 @@ class DepartmentController extends Controller
         ]);
 
         Department::create($request->all());
+        activity()->log("Menambahkan departemen baru: {$request->name}");
         return back()->with('success', 'Departemen berhasil ditambahkan!');
     }
 
@@ -53,6 +54,7 @@ class DepartmentController extends Controller
 
         $department = Department::findOrFail($id);
         $department->update($request->all());
+        activity()->log("Memperbarui data departemen: {$request->name}");
         return back()->with('success', 'Departemen berhasil diperbarui!');
     }
 
@@ -60,6 +62,7 @@ class DepartmentController extends Controller
     {
         $department = Department::findOrFail($id);
         $department->delete();
+        activity()->log("Menghapus departemen: {$department->name}");
         return back()->with('success', 'Departemen berhasil dihapus!');
     }
 }

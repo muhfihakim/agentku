@@ -199,7 +199,7 @@
                                 <tr>
                                     <td>{{ $start + $index }}</td>
                                     <td>{{ $tenant->id }}</td>
-                                    <td>{{ $tenant->company_name ?? 'N/A' }}</td>
+                                    <td>{{ $tenant->company ?? 'N/A' }}</td>
                                     <td>{{ $tenant->user->email ?? 'N/A' }}</td>
                                     <td>
                                         @php $planName = isset($tenant->plan_id) && isset($plansList[$tenant->plan_id]) ? $plansList[$tenant->plan_id]->name : 'Belum Ada'; @endphp
@@ -223,16 +223,16 @@
                                     </td>
                                     <td>
                                         <span style="color: #4b5563; font-weight: 500;">
-                                            {{ isset($tenant->billing_end_date) ? \Carbon\Carbon::parse($tenant->billing_end_date)->format('d M Y') : '-' }}
+                                            {{ isset($tenant->plan_ends_at) ? \Carbon\Carbon::parse($tenant->plan_ends_at)->format('d M Y') : '-' }}
                                         </span>
                                     </td>
                                     <td>
                                         <button
-                                            onclick="openDetailModal('{{ $tenant->id }}', '{{ htmlspecialchars($tenant->company_name ?? 'N/A', ENT_QUOTES) }}', '{{ \Carbon\Carbon::parse($tenant->created_at)->format('d M Y') }}')"
+                                            onclick="openDetailModal('{{ $tenant->id }}', '{{ htmlspecialchars($tenant->company ?? 'N/A', ENT_QUOTES) }}', '{{ \Carbon\Carbon::parse($tenant->created_at)->format('d M Y') }}')"
                                             class="btn btn-ghost btn-sm" style="color: #3b82f6;" title="Detail"><i
                                                 class="ph ph-eye"></i> Detail</button>
                                         <button
-                                            onclick="openEditModal('{{ $tenant->id }}', '{{ htmlspecialchars($tenant->company_name ?? '', ENT_QUOTES) }}', '{{ $tenant->account_status ?? 'aktif' }}', '{{ $tenant->plan_id ?? '' }}')"
+                                            onclick="openEditModal('{{ $tenant->id }}', '{{ htmlspecialchars($tenant->company ?? '', ENT_QUOTES) }}', '{{ $tenant->account_status ?? 'aktif' }}', '{{ $tenant->plan_id ?? '' }}')"
                                             class="btn btn-ghost btn-sm" style="color: #10b981;" title="Edit"><i
                                                 class="ph ph-pencil-simple"></i> Edit</button>
                                         <button onclick="confirmDelete('{{ $tenant->id }}')"
@@ -290,7 +290,7 @@
                         <div style="position: relative;">
                             <i class="ph ph-buildings"
                                 style="position: absolute; left: 1rem; top: 50%; transform: translateY(-50%); color: #9ca3af; font-size: 1.25rem;"></i>
-                            <input type="text" id="clientCompanyName" name="company_name" required
+                            <input type="text" id="clientCompanyName" name="company" required
                                 style="width:100%; background:#f9fafb; border:1px solid #d1d5db; padding:0.75rem 0.75rem 0.75rem 3rem; border-radius:0.5rem; color:#111827; box-sizing: border-box;"
                                 placeholder="PT. Perusahaan Satu">
                         </div>
@@ -379,7 +379,7 @@
                         <span
                             style="display:block; font-size: 0.75rem; color: #6b7280; text-transform: uppercase; font-weight: 600; margin-bottom: 0.25rem;">Nama
                             Perusahaan</span>
-                        <div id="detail_company_name" style="font-size: 1rem; color: #111827; font-weight: 500;">-
+                        <div id="detail_company" style="font-size: 1rem; color: #111827; font-weight: 500;">-
                         </div>
                     </div>
                     <div style="margin-bottom: 0.75rem;">
@@ -509,7 +509,7 @@
                 // Detail Modal Logic
                 function openDetailModal(id, companyName, createdAt) {
                     document.getElementById('detail_id').innerText = id;
-                    document.getElementById('detail_company_name').innerText = companyName;
+                    document.getElementById('detail_company').innerText = companyName;
                     document.getElementById('detail_created_at').innerText = createdAt;
                     document.getElementById('detailClientModal').classList.add('active');
                 }

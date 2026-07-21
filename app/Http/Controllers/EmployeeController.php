@@ -53,6 +53,8 @@ class EmployeeController extends Controller
         $validated['device_token'] = \Illuminate\Support\Str::uuid()->toString();
         Employee::create($validated);
 
+        activity()->log("Menambahkan karyawan baru: {$validated['name']}");
+
         return back()->with('success', 'Karyawan berhasil ditambahkan.');
     }
 
@@ -70,6 +72,8 @@ class EmployeeController extends Controller
 
         $employee->update($validated);
 
+        activity()->log("Memperbarui data karyawan: {$validated['name']}");
+
         return back()->with('success', 'Data karyawan berhasil diperbarui.');
     }
 
@@ -77,6 +81,7 @@ class EmployeeController extends Controller
     {
         $employee = Employee::findOrFail($id);
         $employee->delete();
+        activity()->log("Menghapus karyawan: {$employee->name}");
         return back()->with('success', 'Karyawan berhasil dihapus.');
     }
 
@@ -99,6 +104,8 @@ class EmployeeController extends Controller
         unset($broadcastData['screen']);
         \App\Events\AgentDataReceived::dispatch($broadcastData);
 
+        activity()->log("Mencabut akses device token milik karyawan: {$employee->name}");
+
         return back()->with('success', 'Token berhasil di-revoke dan status diubah jadi offline.');
     }
 
@@ -107,6 +114,7 @@ class EmployeeController extends Controller
         $employee = Employee::findOrFail($id);
         $employee->device_token = \Illuminate\Support\Str::uuid()->toString();
         $employee->save();
+        activity()->log("Membuat ulang device token untuk karyawan: {$employee->name}");
         return back()->with('success', 'Token berhasil dibuat ulang.');
     }
 }

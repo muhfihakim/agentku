@@ -17,7 +17,7 @@ class TenantController extends Controller
         
         if ($request->filled('search')) {
             $search = strtolower($request->search);
-            $query->whereRaw("LOWER(json_unquote(json_extract(data, '$.company_name'))) LIKE ?", ["%{$search}%"])
+            $query->whereRaw("LOWER(json_unquote(json_extract(data, '$.company'))) LIKE ?", ["%{$search}%"])
                   ->orWhere('id', 'like', "%{$search}%");
         }
         
@@ -68,20 +68,20 @@ class TenantController extends Controller
                     $planName = isset($tenant->plan_id) && isset($plansList[$tenant->plan_id]) ? $plansList[$tenant->plan_id]->name : 'Belum Ada';
 
                     $email = $tenant->user->email ?? 'N/A';
-                    $endDate = isset($tenant->billing_end_date) ? \Carbon\Carbon::parse($tenant->billing_end_date)->format('d M Y') : '-';
+                    $endDate = isset($tenant->plan_ends_at) ? \Carbon\Carbon::parse($tenant->plan_ends_at)->format('d M Y') : '-';
                     $html .= '
                     <tr>
                         <td>' . $nomor . '</td>
                         <td>' . $tenant->id . '</td>
-                        <td>' . ($tenant->company_name ?? 'N/A') . '</td>
+                        <td>' . ($tenant->company ?? 'N/A') . '</td>
                         <td>' . $email . '</td>
                         <td><span class="badge" style="background:#f3f4f6; color:#4b5563;">' . htmlspecialchars($planName) . '</span></td>
                         <td>' . $accBadge . '</td>
                         <td>' . $badge . '</td>
                         <td><span style="color: #4b5563; font-weight: 500;">' . $endDate . '</span></td>
                         <td>
-                            <button onclick="openDetailModal(\'' . $tenant->id . '\', \'' . htmlspecialchars($tenant->company_name ?? 'N/A', ENT_QUOTES) . '\', \'' . \Carbon\Carbon::parse($tenant->created_at)->format('d M Y') . '\')" class="btn btn-ghost btn-sm" style="color: #3b82f6;" title="Detail"><i class="ph ph-eye"></i> Detail</button>
-                            <button onclick="openEditModal(\'' . $tenant->id . '\', \'' . htmlspecialchars($tenant->company_name ?? '', ENT_QUOTES) . '\', \'' . $accStatus . '\', \'' . ($tenant->plan_id ?? '') . '\')" class="btn btn-ghost btn-sm" style="color: #10b981;" title="Edit"><i class="ph ph-pencil-simple"></i> Edit</button>
+                            <button onclick="openDetailModal(\'' . $tenant->id . '\', \'' . htmlspecialchars($tenant->company ?? 'N/A', ENT_QUOTES) . '\', \'' . \Carbon\Carbon::parse($tenant->created_at)->format('d M Y') . '\')" class="btn btn-ghost btn-sm" style="color: #3b82f6;" title="Detail"><i class="ph ph-eye"></i> Detail</button>
+                            <button onclick="openEditModal(\'' . $tenant->id . '\', \'' . htmlspecialchars($tenant->company ?? '', ENT_QUOTES) . '\', \'' . $accStatus . '\', \'' . ($tenant->plan_id ?? '') . '\')" class="btn btn-ghost btn-sm" style="color: #10b981;" title="Edit"><i class="ph ph-pencil-simple"></i> Edit</button>
                             <button onclick="confirmDelete(\'' . $tenant->id . '\')" class="btn btn-ghost btn-sm" style="color: #ef4444;" title="Hapus"><i class="ph ph-trash"></i> Hapus</button>
                             <form id="delete-form-' . $tenant->id . '" action="' . route('owner.tenants.destroy', $tenant->id) . '" method="POST" style="display: none;">
                                 ' . csrf_field() . '
@@ -113,7 +113,7 @@ class TenantController extends Controller
     {
         $request->validate([
             'id' => 'required|string|unique:tenants,id|regex:/^[a-zA-Z0-9\-]+$/',
-            'company_name' => 'required|string',
+            'company' => 'required|string',
             'plan_id' => 'nullable|exists:plans,id',
             'admin_email' => 'required|email|unique:users,email',
             'admin_password' => 'required|min:6',
@@ -123,7 +123,7 @@ class TenantController extends Controller
 
         $tenantData = [
             'id' => $tenantId,
-            'company_name' => $request->company_name,
+            'company' => $request->company,
             'account_status' => $request->account_status ?? 'aktif',
             'plan_id' => $request->plan_id,
         ];
@@ -132,7 +132,7 @@ class TenantController extends Controller
             $plan = Plan::find($request->plan_id);
             if ($plan) {
                 $tenantData['billing_start_date'] = \Carbon\Carbon::now()->format('Y-m-d H:i:s');
-                $tenantData['billing_end_date'] = \Carbon\Carbon::now()->addDays($plan->duration_days)->format('Y-m-d H:i:s');
+                $tenantData['plan_ends_at'] = \Carbon\Carbon::now()->addDays($plan->duration_days)->format('Y-m-d H:i:s');
                 $tenantData['billing_status'] = 'lunas';
             }
         }
@@ -140,7 +140,7 @@ class TenantController extends Controller
         $tenant = Tenant::create($tenantData);
 
         $admin = User::create([
-            'name' => 'Admin ' . $request->company_name,
+            'name' => 'Admin ' . $request->company,
             'email' => $request->admin_email,
             'password' => Hash::make($request->admin_password),
             'tenant_id' => $tenant->id,
@@ -172,14 +172,14 @@ class TenantController extends Controller
     public function update(Request $request, $id)
     {
         $request->validate([
-            'company_name' => 'required|string',
+            'company' => 'required|string',
             'account_status' => 'required|in:aktif,nonaktif',
             'plan_id' => 'nullable|exists:plans,id',
         ]);
 
         $tenant = Tenant::findOrFail($id);
         $updateData = [
-            'company_name' => $request->company_name,
+            'company' => $request->company,
             'account_status' => $request->account_status,
             'plan_id' => $request->plan_id,
         ];
@@ -188,7 +188,7 @@ class TenantController extends Controller
             $plan = Plan::find($request->plan_id);
             if ($plan) {
                 $updateData['billing_start_date'] = \Carbon\Carbon::now()->format('Y-m-d H:i:s');
-                $updateData['billing_end_date'] = \Carbon\Carbon::now()->addDays($plan->duration_days)->format('Y-m-d H:i:s');
+                $updateData['plan_ends_at'] = \Carbon\Carbon::now()->addDays($plan->duration_days)->format('Y-m-d H:i:s');
                 $updateData['billing_status'] = 'lunas';
             }
         }

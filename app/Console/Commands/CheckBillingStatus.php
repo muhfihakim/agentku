@@ -19,7 +19,7 @@ class CheckBillingStatus extends Command
     {
         $now = Carbon::now()->format('Y-m-d H:i:s');
         
-        $expiredTenants = Tenant::whereRaw("json_unquote(json_extract(data, '$.billing_end_date')) < ?", [$now])
+        $expiredTenants = Tenant::whereRaw("json_unquote(json_extract(data, '$.plan_ends_at')) < ?", [$now])
                                 ->where(function($q) {
                                     $q->whereRaw("json_unquote(json_extract(data, '$.billing_status')) = 'lunas'")
                                       ->orWhereRaw("json_extract(data, '$.billing_status') IS NULL");

@@ -12,6 +12,8 @@ class UserSeeder extends Seeder
      */
     public function run(): void
     {
+        \Illuminate\Support\Facades\DB::statement('DROP DATABASE IF EXISTS tenantmajumundur');
+        
         $tenant = \App\Models\Tenant::firstOrCreate(['id' => 'majumundur']);
         
         $admin = \App\Models\User::firstOrCreate([

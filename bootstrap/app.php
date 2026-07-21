@@ -17,6 +17,7 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->alias([
             'tenant.auth' => \App\Http\Middleware\InitializeTenancyByAuthUser::class,
             'role' => \Spatie\Permission\Middleware\RoleMiddleware::class,
+            'plan.active' => \App\Http\Middleware\CheckPlanActive::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - AgentKu</title>
+    <title>Register - AgentKu</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -307,8 +307,8 @@
                 <div class="login-logo">
                     <i class="ph ph-monitor-play"></i>
                 </div>
-                <h1 class="login-title">AgentKu</h1>
-                <p class="login-subtitle">Akses dasbor pemantauan cerdas</p>
+                <h1 class="login-title">Daftar AgentKu</h1>
+                <p class="login-subtitle">Daftar akun baru untuk mulai memantau</p>
             </div>
 
             @if ($errors->any())
@@ -318,13 +318,29 @@
                 </div>
             @endif
 
-            <form id="loginForm" action="{{ route('login') }}" method="POST">
+            <form id="loginForm" action="{{ route('register') }}" method="POST">
                 @csrf
                 
                 <div class="form-group">
+                    <label class="form-label" for="name">Nama Lengkap</label>
+                    <div class="input-group">
+                        <input type="text" id="name" name="name" class="form-input" placeholder="John Doe" value="{{ old('name') }}" required autofocus>
+                        <i class="ph ph-user input-icon"></i>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="company">Nama Perusahaan / Organisasi</label>
+                    <div class="input-group">
+                        <input type="text" id="company" name="company" class="form-input" placeholder="PT Maju Bersama" value="{{ old('company') }}" required>
+                        <i class="ph ph-buildings input-icon"></i>
+                    </div>
+                </div>
+
+                <div class="form-group">
                     <label class="form-label" for="email">Email</label>
                     <div class="input-group">
-                        <input type="email" id="email" name="email" class="form-input" placeholder="admin@example.com" value="{{ old('email') }}" required autofocus>
+                        <input type="email" id="email" name="email" class="form-input" placeholder="admin@example.com" value="{{ old('email') }}" required>
                         <i class="ph ph-envelope-simple input-icon"></i>
                     </div>
                 </div>
@@ -337,13 +353,21 @@
                     </div>
                 </div>
 
+                <div class="form-group">
+                    <label class="form-label" for="password_confirmation">Konfirmasi Password</label>
+                    <div class="input-group">
+                        <input type="password" id="password_confirmation" name="password_confirmation" class="form-input" placeholder="••••••••" required>
+                        <i class="ph ph-lock-key input-icon"></i>
+                    </div>
+                </div>
+
                 <button type="submit" id="btnSubmit" class="btn-login">
-                    <span id="btnText">Masuk Dashboard</span>
+                    <span id="btnText">Daftar Sekarang</span>
                     <i class="ph ph-arrow-right" id="btnIcon"></i>
                 </button>
                 
                 <p style="text-align: center; margin-top: 1.5rem; font-size: 0.875rem; color: #6b7280;">
-                    Belum punya akun? <a href="{{ route('register') }}" style="color: #3b82f6; font-weight: 600; text-decoration: none;">Daftar di sini</a>
+                    Sudah punya akun? <a href="{{ route('login') }}" style="color: #3b82f6; font-weight: 600; text-decoration: none;">Masuk di sini</a>
                 </p>
             </form>
         </div>

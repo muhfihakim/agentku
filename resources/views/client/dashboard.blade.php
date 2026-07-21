@@ -35,7 +35,7 @@
               <div style="display: flex; align-items: center; gap: 0.5rem;">
                 <i class="ph ph-calendar" style="color: #10b981; font-size: 1.25rem;"></i>
                 <span style="font-weight: 600; color: #111827; font-size: 1rem;">
-                    {{ tenant('billing_end_date') ? \Carbon\Carbon::parse(tenant('billing_end_date'))->format('d M Y') : '-' }}
+                    {{ tenant('plan_ends_at') ? \Carbon\Carbon::parse(tenant('plan_ends_at'))->format('d M Y') : '-' }}
                 </span>
               </div>
             </div>

@@ -1,6 +1,6 @@
 <x-layouts.app>
     <div class="page-header">
-        <h1 class="page-title">Layar Langsung</h1>
+        <h1 class="page-title">Monitoring</h1>
         <p class="page-subtitle">Pemantauan layar waktu nyata (real-time)</p>
     </div>
 
