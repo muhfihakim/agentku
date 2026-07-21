@@ -753,7 +753,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // WebSocket Connection Status Badge
   const wsBadge = document.getElementById('wsConnectionBadge');
-  if (wsBadge && window.echoInstance && window.echoInstance.connector && window.echoInstance.connector.pusher) {
+  if (wsBadge && window.echoInstance && window.echoInstance.connector) {
       const updateWsBadge = (state) => {
           const dot = wsBadge.querySelector('.status-dot');
           const text = wsBadge.querySelector('span:last-child');
@@ -772,11 +772,18 @@ document.addEventListener('DOMContentLoaded', () => {
           }
       };
       
-      const pusher = window.echoInstance.connector.pusher;
-      pusher.connection.bind('state_change', (states) => {
-          updateWsBadge(states.current);
-      });
-      updateWsBadge(pusher.connection.state);
+      const pusher = window.echoInstance.connector.pusher || window.echoInstance.connector.reverb || window.echoInstance.connector;
+      if (pusher && pusher.connection) {
+          pusher.connection.bind('state_change', (states) => {
+              const state = typeof states === 'string' ? states : (states.current || 'disconnected');
+              updateWsBadge(state);
+          });
+          pusher.connection.bind('connected', () => updateWsBadge('connected'));
+          pusher.connection.bind('disconnected', () => updateWsBadge('disconnected'));
+          
+          const currentState = pusher.connection.state || 'connecting';
+          updateWsBadge(currentState);
+      }
   }
 
   // Profile Dropdown - close on click outside
