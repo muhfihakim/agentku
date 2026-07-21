@@ -376,15 +376,17 @@ document.addEventListener('DOMContentLoaded', () => {
               const res = await fetch("/api/monitor?user=" + encodeURIComponent(data.user));
               const fullData = await res.json();
               if (fullData.screen) {
-                detailViewer.style.background = `var(--gray-900) url("${fullData.screen}") center/cover no-repeat`;
+                detailViewer.style.background = `#0f172a url("${fullData.screen}") center/cover no-repeat`;
               }
             } catch (err) {}
 
-            const dBadge = document.querySelector('.detail-employee-header .badge');
-            if (dBadge) {
-              dBadge.textContent = data.status.charAt(0).toUpperCase() + data.status.slice(1);
-              dBadge.className = `badge badge-${data.status}`;
+            // Update status pill
+            const dStatusPill = document.querySelector('.detail-status-pill');
+            if (dStatusPill) {
+              dStatusPill.className = `detail-status-pill ${data.status}`;
+              dStatusPill.querySelector('.detail-status-dot') && (dStatusPill.querySelector('.detail-status-dot').className = 'detail-status-dot');
             }
+            
             const windowVal = document.querySelector('.window-value');
             if (windowVal && data.window) windowVal.textContent = data.window;
             
@@ -395,13 +397,29 @@ document.addEventListener('DOMContentLoaded', () => {
             if (ssidVal && data.ssid) ssidVal.textContent = data.ssid;
             
             const cpuVal = document.querySelector('.cpu-value');
-            if (cpuVal && data.cpu !== undefined) cpuVal.textContent = data.cpu + '%';
+            if (cpuVal && data.cpu !== undefined) {
+              cpuVal.firstChild.textContent = data.cpu;
+              const bar = document.querySelector('.fill-cpu');
+              if (bar) bar.style.width = data.cpu + '%';
+              const netDl = document.getElementById('net-dl');
+              if (netDl && data.net_download !== undefined) netDl.textContent = data.net_download;
+              const netUl = document.getElementById('net-ul');
+              if (netUl && data.net_upload !== undefined) netUl.textContent = data.net_upload;
+            }
             
             const ramVal = document.querySelector('.ram-value');
-            if (ramVal && data.ram !== undefined) ramVal.textContent = data.ram + '%';
+            if (ramVal && data.ram !== undefined) {
+              ramVal.firstChild.textContent = data.ram;
+              const bar = document.querySelector('.fill-ram');
+              if (bar) bar.style.width = data.ram + '%';
+            }
             
             const storageVal = document.querySelector('.storage-value');
-            if (storageVal && data.storage !== undefined) storageVal.textContent = data.storage + '%';
+            if (storageVal && data.storage !== undefined) {
+              storageVal.firstChild.textContent = data.storage;
+              const bar = document.querySelector('.fill-disk');
+              if (bar) bar.style.width = data.storage + '%';
+            }
 
             const mapContainer = document.querySelector('.map-container');
             const mapCity = document.querySelector('.location-city-name');
@@ -486,13 +504,16 @@ document.addEventListener('DOMContentLoaded', () => {
             const topAppsList = document.querySelector('.top-apps-list');
             if (topAppsList && data.top_apps && Array.isArray(data.top_apps)) {
                 topAppsList.innerHTML = '';
+                const maxDur = Math.max(...data.top_apps.map(a => a.duration), 1);
                 data.top_apps.forEach(app => {
                     const row = document.createElement('div');
-                    row.className = 'detail-info-row';
+                    row.className = 'top-app-row';
                     const h = Math.floor(app.duration / 3600).toString().padStart(2, '0');
                     const m = Math.floor((app.duration % 3600) / 60).toString().padStart(2, '0');
                     const s = (app.duration % 60).toString().padStart(2, '0');
-                    row.innerHTML = `<span class="detail-info-label"><i class="ph ph-app-window"></i> ${app.name}</span><span class="detail-info-value">${h}:${m}:${s}</span>`;
+                    const pct = Math.round((app.duration / maxDur) * 100);
+                    const name = app.name.length > 28 ? app.name.substring(0, 28) + '...' : app.name;
+                    row.innerHTML = `<div class="top-app-name"><span>${name}</span><span class="top-app-dur">${h}:${m}:${s}</span></div><div class="top-app-bar"><div class="top-app-fill" style="width:${pct}%"></div></div>`;
                     topAppsList.appendChild(row);
                 });
             }
@@ -502,8 +523,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 appsList.innerHTML = '';
                 data.apps.forEach(app => {
                     const row = document.createElement('div');
-                    row.className = 'detail-info-row';
-                    row.innerHTML = '<span class="detail-info-label" style="display:flex; align-items:center; gap:8px;"><i class="ph ph-app-window" style="color:var(--primary);"></i>' + app + '</span>';
+                    row.className = 'detail-app-chip';
+                    row.innerHTML = '<div class="detail-app-icon"><i class="ph ph-app-window"></i></div><span>' + app + '</span>';
                     appsList.appendChild(row);
                 });
             }
