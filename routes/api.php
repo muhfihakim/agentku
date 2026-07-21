@@ -99,6 +99,7 @@ Route::post('/monitor', function (Request $request) {
     
     $broadcastData = $data;
     unset($broadcastData['screen']); // Too large for WebSocket
+    $broadcastData['tenant'] = $tenantId;
     
     \App\Events\AgentDataReceived::dispatch($broadcastData);
     return response()->json(['status' => 'ok']);

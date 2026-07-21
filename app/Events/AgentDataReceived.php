@@ -21,8 +21,9 @@ class AgentDataReceived implements ShouldBroadcastNow
 
     public function broadcastOn(): array
     {
+        $tenantId = $this->data['tenant'] ?? 'global';
         return [
-            new Channel('agents'),
+            new Channel('agents.' . $tenantId),
         ];
     }
 }

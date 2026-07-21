@@ -282,8 +282,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const simulateStatusUpdates = () => {
     if (!window.echoInstance) return;
-    window.echoInstance.channel("agents")
-      .listen("AgentDataReceived", async (e) => {
+    const tenantId = window.Laravel ? window.Laravel.tenantId : '';
+    const channelName = tenantId ? `agents.${tenantId}` : 'agents';
+    window.echoInstance.channel(channelName)
+      .listen('AgentDataReceived', (e) => {
         const data = e.data;
         if (!data || !data.user) return;
 
