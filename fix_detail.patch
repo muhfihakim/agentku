@@ -1,0 +1,207 @@
+--- resources/views/client/detail.blade.php
++++ resources/views/client/detail.blade.php
+@@ -27,33 +27,10 @@
+                     </button>
+                 </div>
+ 
+-                <!-- Location Map Card -->
+-                <div class="detail-card" style="margin-top: 20px;">
+-                    <h3 class="detail-card-title">
+-                        <i class="ph ph-map-pin"></i>
+-                        Peta Lokasi (<span class="location-city-name">{{ $data['city'] ?? 'Unknown' }}</span>)
+-                    </h3>
+-                    <div class="map-container"
+-                        style="width: 100%; height: 300px; border-radius: 8px; overflow: hidden; background:var(--gray-800);">
+-                        @if (isset($data['lat']) && isset($data['lng']))
+-                            <iframe id="mapFrame" width="100%" height="100%" frameborder="0" scrolling="no"
+-                                marginheight="0" marginwidth="0"
+-                                src="https://www.openstreetmap.org/export/embed.html?bbox={{ $data['lng'] - 0.01 }}%2C{{ $data['lat'] - 0.01 }}%2C{{ $data['lng'] + 0.01 }}%2C{{ $data['lat'] + 0.01 }}&amp;layer=mapnik&amp;marker={{ $data['lat'] }}%2C{{ $data['lng'] }}"></iframe>
+-                        @else
+-                            <div id="mapFramePlaceholder"
+-                                style="width:100%; height:100%; display:flex; align-items:center; justify-content:center; color:var(--gray-400);">
+-                                Data Lokasi Tidak Tersedia</div>
+-                        @endif
+-                    </div>
+-                </div>
+-
+-                <!-- Live Activity Timeline Card -->
+-                <div class="detail-card" style="margin-top: 20px;">
+-                    <h3 class="detail-card-title">
+-                        <i class="ph ph-list-dashes"></i>
+-                        Lini Masa Aktivitas Langsung
+-                    </h3>
+-                    <div class="detail-card-grid activity-timeline" style="max-height: 250px; overflow-y: auto;">
+-                        <div class="detail-info-row">
+-                            <span class="detail-info-label" style="display:flex; align-items:center; gap:8px;">
+-                                <i class="ph ph-clock" style="color:var(--gray-600);"></i>
+-                                Menunggu aktivitas...
+-                            </span>
+-                        </div>
+-                    </div>
+-                </div>
+-
+-                <!-- Historical Screenshots -->
+-                <div class="detail-card" style="margin-top: 20px;">
+-                    <h3 class="detail-card-title">
+-                        <i class="ph ph-images"></i>
+-                        Riwayat Tangkapan Layar
+-                    </h3>
+-                    <div style="display:flex; overflow-x:auto; gap:10px; padding:10px 0;">
+-                        @forelse($screenshots ?? [] as $shot)
+-                            @php
+-                                $disk = env('FILESYSTEM_DISK', 'public');
+-                                $imgUrl = \Illuminate\Support\Facades\Storage::disk($disk)->url($shot->file_path);
+-                            @endphp
+-                            <div style="min-width: 150px; border:1px solid var(--gray-700); border-radius:8px; overflow:hidden;">
+-                                <a href="{{ $imgUrl }}" target="_blank">
+-                                    <img src="{{ $imgUrl }}" style="width:100%; height:90px; object-fit:cover;" alt="Screenshot">
+-                                </a>
+-                                <div style="padding:5px; font-size:0.7rem; color:var(--gray-400); background:var(--gray-800);">
+-                                    {{ $shot->captured_at->format('H:i') }}<br>
+-                                    <span style="white-space:nowrap; overflow:hidden; text-overflow:ellipsis; display:block;" title="{{ $shot->active_window }}">
+-                                        {{ $shot->active_window ?? 'Unknown' }}
+-                                    </span>
+-                                </div>
+-                            </div>
+-                        @empty
+-                            <p style="color:var(--gray-500); font-size:0.8rem;">Belum ada riwayat tangkapan layar.</p>
+-                        @endforelse
+-                    </div>
+-                </div>
+-
+-                <!-- Security Alerts -->
+-                <div class="detail-card" style="margin-top: 20px;">
+-                    <h3 class="detail-card-title" style="color: #ef4444;">
+-                        <i class="ph ph-shield-warning"></i>
+-                        Peringatan Keamanan & USB
+-                    </h3>
+-                    <div class="detail-card-grid" style="max-height: 200px; overflow-y: auto;">
+-                        @forelse($alerts ?? [] as $alert)
+-                            <div class="detail-info-row">
+-                                <span class="detail-info-label" style="display:flex; align-items:center; gap:8px;">
+-                                    @if(str_contains($alert->type, 'inserted'))
+-                                        <i class="ph ph-usb" style="color:#ef4444;"></i>
+-                                    @else
+-                                        <i class="ph ph-usb" style="color:#10b981;"></i>
+-                                    @endif
+-                                    {{ $alert->description }}
+-                                </span>
+-                                <span class="detail-info-value" style="font-size:0.75rem;">{{ $alert->logged_at->diffForHumans() }}</span>
+-                            </div>
+-                        @empty
+-                            <p style="color:var(--gray-500); font-size:0.8rem; padding: 10px;">Tidak ada peringatan.</p>
+-                        @endforelse
+-                    </div>
+-                </div>
+             </div>
+ 
+             <!-- Right: Detail Info -->
+@@ -177,88 +88,111 @@
+                             <span
+                                 class="detail-info-value idle-value">{{ isset($data['idle_time']) ? gmdate('H:i:s', $data['idle_time']) : '00:00:00' }}</span>
+                         </div>
+                     </div>
+                 </div>
++            </div>
++        </div>
+ 
++        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 24px; margin-top: 24px;">
++                <!-- Live Activity Timeline Card -->
++                <div class="detail-card">
++                    <h3 class="detail-card-title">
++                        <i class="ph ph-list-dashes"></i>
++                        Lini Masa Aktivitas Langsung
++                    </h3>
++                    <div class="detail-card-grid activity-timeline" style="max-height: 250px; overflow-y: auto;">
++                        <div class="detail-info-row">
++                            <span class="detail-info-label" style="display:flex; align-items:center; gap:8px;">
++                                <i class="ph ph-clock" style="color:var(--gray-600);"></i>
++                                Menunggu aktivitas...
++                            </span>
++                        </div>
++                    </div>
++                </div>
++
++                <!-- Security Alerts -->
++                <div class="detail-card">
++                    <h3 class="detail-card-title" style="color: #ef4444;">
++                        <i class="ph ph-shield-warning"></i>
++                        Peringatan Keamanan & USB
++                    </h3>
++                    <div class="detail-card-grid" style="max-height: 200px; overflow-y: auto;">
++                        @forelse($alerts ?? [] as $alert)
++                            <div class="detail-info-row">
++                                <span class="detail-info-label" style="display:flex; align-items:center; gap:8px;">
++                                    @if(str_contains($alert->type, 'inserted'))
++                                        <i class="ph ph-usb" style="color:#ef4444;"></i>
++                                    @else
++                                        <i class="ph ph-usb" style="color:#10b981;"></i>
++                                    @endif
++                                    {{ $alert->description }}
++                                </span>
++                                <span class="detail-info-value" style="font-size:0.75rem;">{{ $alert->logged_at->diffForHumans() }}</span>
++                            </div>
++                        @empty
++                            <p style="color:var(--gray-500); font-size:0.8rem; padding: 10px;">Tidak ada peringatan.</p>
++                        @endforelse
++                    </div>
++                </div>
+                 <!-- Top Apps Duration Card -->
+                 <div class="detail-card">
+...
+@@ -261,7 +195,65 @@
+                         @endforeach
+                     </div>
+                 </div>
+-            </div>
++                
++                <!-- Location Map Card -->
++                <div class="detail-card">
++                    <h3 class="detail-card-title">
++                        <i class="ph ph-map-pin"></i>
++                        Peta Lokasi (<span class="location-city-name">{{ $data['city'] ?? 'Unknown' }}</span>)
++                    </h3>
++                    <div class="map-container"
++                        style="width: 100%; height: 250px; overflow: hidden; background:var(--gray-100);">
++                        @if (isset($data['lat']) && isset($data['lng']))
++                            <iframe id="mapFrame" width="100%" height="100%" frameborder="0" scrolling="no"
++                                marginheight="0" marginwidth="0"
++                                src="https://www.openstreetmap.org/export/embed.html?bbox={{ $data['lng'] - 0.01 }}%2C{{ $data['lat'] - 0.01 }}%2C{{ $data['lng'] + 0.01 }}%2C{{ $data['lat'] + 0.01 }}&amp;layer=mapnik&amp;marker={{ $data['lat'] }}%2C{{ $data['lng'] }}"></iframe>
++                        @else
++                            <div id="mapFramePlaceholder"
++                                style="width:100%; height:100%; display:flex; align-items:center; justify-content:center; color:var(--gray-400);">
++                                Data Lokasi Tidak Tersedia</div>
++                        @endif
++                    </div>
++                </div>
+         </div>
++        
++        <!-- Historical Screenshots -->
++        <div class="detail-card" style="margin-top: 24px;">
++            <h3 class="detail-card-title">
++                <i class="ph ph-images"></i>
++                Riwayat Tangkapan Layar
++            </h3>
++            <div style="display:flex; overflow-x:auto; gap:10px; padding:10px 16px;">
++                @forelse($screenshots ?? [] as $shot)
++                    @php
++                        $disk = env('FILESYSTEM_DISK', 'public');
++                        $imgUrl = \Illuminate\Support\Facades\Storage::disk($disk)->url($shot->file_path);
++                    @endphp
++                    <div style="min-width: 150px; border:1px solid var(--gray-200); border-radius:8px; overflow:hidden;">
++                        <a href="{{ $imgUrl }}" target="_blank">
++                            <img src="{{ $imgUrl }}" style="width:100%; height:90px; object-fit:cover;" alt="Screenshot">
++                        </a>
++                        <div style="padding:5px; font-size:0.7rem; color:var(--gray-600); background:#f9fafb;">
++                            {{ $shot->captured_at->format('H:i') }}<br>
++                            <span style="white-space:nowrap; overflow:hidden; text-overflow:ellipsis; display:block;" title="{{ $shot->active_window }}">
++                                {{ $shot->active_window ?? 'Unknown' }}
++                            </span>
++                        </div>
++                    </div>
++                @empty
++                    <p style="color:var(--gray-500); font-size:0.8rem; padding: 10px 0;">Belum ada riwayat tangkapan layar.</p>
++                @endforelse
++            </div>
++        </div>
+     </section>

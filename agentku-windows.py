@@ -11,6 +11,9 @@ import subprocess
 from PIL import ImageGrab
 from io import BytesIO
 
+import tkinter as tk
+from tkinter import simpledialog
+
 # Prevent multiple instances
 mutex = ctypes.windll.kernel32.CreateMutexW(None, False, "Global\\AgentKu_Monitor_Mutex_v1")
 if ctypes.windll.kernel32.GetLastError() == 183: # ERROR_ALREADY_EXISTS
@@ -150,8 +153,6 @@ def check_and_prompt_config(config):
     if tenant and token:
         return config
     try:
-        import tkinter as tk
-        from tkinter import simpledialog
         root = tk.Tk()
         root.withdraw()
         root.attributes('-topmost', True)
@@ -330,9 +331,6 @@ def main():
             if e.code == 401:
                 print("Token revoked. Prompting user...")
                 try:
-                    import tkinter as tk
-                    from tkinter import simpledialog
-                    
                     root = tk.Tk()
                     root.withdraw()
                     root.attributes('-topmost', True)
