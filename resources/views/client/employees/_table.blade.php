@@ -25,13 +25,7 @@
             -
         @endif
     </td>
-    <td>
-        @if($employee->os_info)
-            <i class="ph ph-windows-logo"></i> {{ $employee->os_info }}
-        @else
-            -
-        @endif
-    </td>
+
     <td>
         @if($employee->status === 'online' || $employee->status === 'active')
             <span class="badge badge-active">Active</span>
