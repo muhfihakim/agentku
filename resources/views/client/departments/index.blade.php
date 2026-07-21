@@ -5,14 +5,14 @@
             <p class="page-subtitle">Kelola departemen perusahaan</p>
         </div>
 
-        @push('styles')
+
         <style>
             @keyframes loading {
                 0% { transform: translateX(-100%); }
                 100% { transform: translateX(100%); }
             }
         </style>
-        @endpush
+
 
 
         <div class="card" style="margin-top: 2rem; margin-bottom: 1rem; padding: 1rem;">

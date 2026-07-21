@@ -1,5 +1,5 @@
 <x-layouts.app>
-@push('styles')
+
 <style>
 /* ─── Detail Page Override ─────────────────────────────── */
 .view-detail { padding: 0 !important; background: #f0f2f7; min-height: 100vh; }
@@ -404,7 +404,7 @@
 }
 </style>
 
-@endpush
+
 
 <section class="view view-detail">
 
