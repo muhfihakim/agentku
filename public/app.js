@@ -285,7 +285,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const tenantId = window.Laravel ? window.Laravel.tenantId : '';
     const channelName = tenantId ? `agents.${tenantId}` : 'agents';
     window.echoInstance.channel(channelName)
-      .listen('AgentDataReceived', (e) => {
+      .listen('AgentDataReceived', async (e) => {
         const data = e.data;
         if (!data || !data.user) return;
 
