@@ -11,7 +11,7 @@
     padding: 20px 28px;
     background: #fff;
     border-bottom: 1px solid #e5e7eb;
-    gap: 16px;
+    gap: 12px;
     flex-wrap: wrap;
 }
 
@@ -46,7 +46,7 @@
 .detail-name { font-size: 16px; font-weight: 700; color: #111827; line-height: 1.2; }
 .detail-sub  { font-size: 12px; color: #9ca3af; margin-top: 2px; }
 
-.detail-topbar-right { display: flex; align-items: center; gap: 10px; }
+.detail-topbar-right { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
 .detail-status-pill {
     display: inline-flex; align-items: center; gap: 6px;
     padding: 5px 12px; border-radius: 999px;
@@ -290,24 +290,120 @@
 .screenshot-time { padding: 3px 6px; font-size: 10px; color: #9ca3af; background: #f9fafb; text-align: center; }
 
 /* ─── Responsive ──────────────────────────────────────── */
+
+/* Tablet: ≤ 1100px → stack columns */
 @media (max-width: 1100px) {
     .detail-body {
         grid-template-columns: 1fr;
-        padding: 16px 16px 28px;
+        padding: 16px 16px 32px;
+        gap: 16px;
     }
-    .detail-panel-screen { grid-column: 1; }
-    .detail-panel-right  { grid-column: 1; }
+    .detail-panel-screen { grid-column: 1; grid-row: auto; }
+    .detail-panel-right  { grid-column: 1; grid-row: auto; }
     .detail-metrics-row  { grid-template-columns: repeat(3, 1fr); }
 }
-@media (max-width: 640px) {
-    .detail-topbar { padding: 14px 16px; }
-    .detail-body   { padding: 12px 12px 28px; gap: 14px; }
-    .detail-metrics-row { grid-template-columns: 1fr 1fr; }
-    .detail-name { font-size: 14px; }
-    .detail-topbar-right { gap: 6px; }
+
+/* Mobile large: ≤ 768px */
+@media (max-width: 768px) {
+    /* Topbar: stack left/right */
+    .detail-topbar {
+        padding: 12px 14px;
+        gap: 10px;
+    }
+    .detail-topbar-left  { gap: 10px; flex: 1; min-width: 0; }
+    .detail-topbar-right { gap: 6px; flex-shrink: 0; }
+    .detail-identity { min-width: 0; overflow: hidden; }
+    .detail-name { font-size: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 150px; }
+    .detail-sub  { display: none; }
+    .detail-avatar { width: 38px; height: 38px; font-size: 13px; }
+
+    /* Hide text labels on action buttons, show icon only */
     .detail-action-btn span { display: none; }
+    .detail-action-btn { padding: 7px 10px; }
+
+    /* Body */
+    .detail-body { padding: 10px 10px 28px; gap: 12px; }
+
+    /* Screen footer wraps nicely */
+    .detail-screen-footer { flex-wrap: wrap; gap: 6px; padding: 8px 12px; }
+    .detail-active-window { font-size: 11px; max-width: calc(100% - 70px); }
+    .screen-toolbar-btns  { gap: 4px; }
+    .screen-toolbar-btn   { padding: 4px 8px; font-size: 10px; }
+
+    /* Metrics: 3 columns still, but smaller */
+    .detail-metrics-row { grid-template-columns: repeat(3, 1fr); gap: 8px; }
+    .detail-metric-card  { padding: 12px 10px; gap: 6px; }
+    .detail-metric-value { font-size: 18px; }
+    .detail-metric-label { font-size: 10px; }
+    .detail-metric-sub   { font-size: 10px; }
+
+    /* Info card rows — allow wrapping */
+    .dinfo-row { flex-wrap: nowrap; gap: 4px; padding: 9px 14px; }
+    .dinfo-label { font-size: 11.5px; min-width: 100px; }
+    .dinfo-value { font-size: 11.5px; text-align: right; flex: 1; }
+
+    /* Section headers */
+    .detail-section-header { padding: 12px 14px 8px; font-size: 12px; }
+    .detail-section-body   { padding: 10px 12px; }
+
+    /* Map slightly shorter */
+    .detail-map-card > div[style*="height:250px"] { height: 200px !important; }
+
+    /* Screenshots 3→2 columns */
+    .screenshots-grid { grid-template-columns: repeat(2, 1fr); gap: 6px; padding: 10px 12px; }
+    .screenshot-thumb img { height: 55px; }
+}
+
+/* Mobile small: ≤ 480px */
+@media (max-width: 480px) {
+    /* Topbar more compact */
+    .detail-topbar { padding: 10px 12px; }
+    .detail-back-btn { padding: 6px 10px; font-size: 12px; }
+    .detail-back-btn span { display: none; } /* Hide "Kembali" text on very small */
+    .detail-name { max-width: 110px; font-size: 13px; }
+    .detail-status-pill { padding: 4px 9px; font-size: 11px; }
+
+    /* Body */
+    .detail-body { padding: 8px 8px 24px; gap: 10px; }
+
+    /* Metrics: 2 columns for very small screens */
+    .detail-metrics-row { grid-template-columns: repeat(2, 1fr); gap: 8px; }
+    /* Disk card spans full on 2-col grid at small */
+    .detail-metrics-row .detail-metric-card:nth-child(3) {
+        grid-column: 1 / -1;
+        flex-direction: row; align-items: center; gap: 12px;
+        padding: 10px 14px;
+    }
+    .detail-metrics-row .detail-metric-card:nth-child(3) .detail-metric-bar { flex: 1; margin: 0; }
+    .detail-metrics-row .detail-metric-card:nth-child(3) .detail-metric-value { font-size: 18px; }
+
+    /* Network chart smaller */
+    .detail-section-body canvas { max-height: 140px; }
+
+    /* Map even shorter */
+    .detail-map-card > div[style*="height"] { height: 170px !important; }
+
+    /* Info card tight */
+    .dinfo-row { padding: 8px 12px; }
+    .dinfo-label { font-size: 11px; min-width: 90px; }
+    .dinfo-value { font-size: 11px; }
+
+    /* Top apps */
+    .top-app-row { padding: 7px 12px; }
+    .top-app-name { font-size: 11.5px; }
+
+    /* Apps chips */
+    .detail-app-chip { padding: 6px 12px; font-size: 11.5px; }
+
+    /* Alert rows */
+    .detail-alert-row { padding: 8px 12px; gap: 8px; }
+    .detail-alert-icon { width: 24px; height: 24px; }
+
+    /* Screenshots 1 column */
+    .screenshots-grid { grid-template-columns: repeat(2, 1fr); }
 }
 </style>
+
 @endpush
 
 <section class="view view-detail">
