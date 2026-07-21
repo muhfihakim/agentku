@@ -285,8 +285,32 @@ def main():
             ctx.verify_mode = ssl.CERT_NONE
             with urllib.request.urlopen(req, context=ctx) as response:
                 print(f"Sent: {window} -> {response.status}")
+        except urllib.error.HTTPError as e:
+            if e.code == 401:
+                print("Token revoked. Prompting user...")
+                try:
+                    if HAS_TKINTER:
+                        root = tk.Tk()
+                        root.withdraw()
+                        os.system('''/usr/bin/osascript -e 'tell app "Finder" to set frontmost of process "Python" to true' ''')
+                        new_token = simpledialog.askstring("AgentKu", "Device Token is revoked or invalid.\nPlease enter a new Device Token:", parent=root)
+                        if new_token:
+                            config['device_token'] = new_token
+                            with open("config.json", "w") as f:
+                                json.dump(config, f)
+                        root.destroy()
+                    else:
+                        new_token = input("AgentKu - Device Token is revoked or invalid. Please enter a new Device Token: ").strip()
+                        if new_token:
+                            config['device_token'] = new_token
+                            with open("config.json", "w") as f:
+                                json.dump(config, f)
+                except Exception as popup_e:
+                    print(f"Prompt error: {popup_e}")
+            else:
+                print(f"Error sending data HTTP: {e.code}")
         except Exception as e:
-            pass
+            print(f"Error sending data: {e}")
             
         time.sleep(5)
 
